@@ -1,0 +1,802 @@
+'use client';
+
+import React, { useState } from 'react'
+import Link from 'next/link'
+import { Section } from '@/components/ui/section'
+import { Container } from '@/components/ui/container'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar } from '@/components/ui/avatar'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { 
+  ArrowRightIcon,
+  AcademicCapIcon,
+  BanknotesIcon,
+  MapPinIcon,
+  BoltIcon,
+  FunnelIcon
+} from "@heroicons/react/24/outline";
+
+export default function JobsPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTab, setSelectedTab] = useState("all");
+  const [filtersVisible, setFiltersVisible] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-base-200">
+      {/* Hero Section - Reimagined with stronger Massachusetts focus */}
+      <Section className="py-16 lg:py-24 bg-gradient-to-br from-spring-green-50 to-moss-green-50/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/ma-pattern-overlay.svg')] opacity-5"></div>
+        <Container className="relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6 text-left">
+              <Badge variant="outline" className="px-4 py-2 bg-spring-green-100/50 text-midnight-forest font-medium">
+                Massachusetts Clean Energy Jobs
+              </Badge>
+              <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                Find Your Place in the <span className="text-spring-green-600">Massachusetts</span> Clean Energy Economy
+          </h1>
+              <p className="text-xl text-moss-green-800">
+                Discover high-growth careers across the Commonwealth. Over <span className="font-semibold">42,000 new clean energy jobs</span> are projected by 2030.
+              </p>
+              
+              <div className="flex gap-4">
+                <Input 
+                  type="search" 
+                  placeholder="Search jobs, skills, companies..." 
+                  className="max-w-md border-spring-green-200 focus:border-spring-green-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Button className="bg-spring-green-600 hover:bg-spring-green-700">
+                  Search Jobs
+                </Button>
+              </div>
+              
+              <div className="flex gap-2 flex-wrap">
+                <Badge className="bg-spring-green-100 text-spring-green-800 py-1">Solar Installer</Badge>
+                <Badge className="bg-spring-green-100 text-spring-green-800 py-1">Energy Analyst</Badge>
+                <Badge className="bg-spring-green-100 text-spring-green-800 py-1">Wind Technician</Badge>
+                <Badge className="bg-spring-green-100 text-spring-green-800 py-1">EV Specialist</Badge>
+                <Badge className="bg-spring-green-100 text-spring-green-800 py-1">Grid Engineer</Badge>
+              </div>
+            </div>
+            
+            <div className="glass-vibrancy shadow-card p-6 border border-spring-green-100/30 backdrop-blur-md bg-white/70 rounded-xl">
+              <h3 className="font-medium text-lg mb-4">Massachusetts Clean Energy Impact</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-spring-green-50 p-4 rounded-lg text-center">
+                  <div className="text-3xl font-bold text-spring-green-700">111,800+</div>
+                  <div className="text-sm text-moss-green-600">Clean Energy Workers</div>
+                </div>
+                <div className="bg-moss-green-50 p-4 rounded-lg text-center">
+                  <div className="text-3xl font-bold text-moss-green-700">38%</div>
+                  <div className="text-sm text-moss-green-600">Growth by 2030</div>
+                </div>
+                <div className="bg-moss-green-50 p-4 rounded-lg text-center">
+                  <div className="text-3xl font-bold text-moss-green-700">$78,500</div>
+                  <div className="text-sm text-moss-green-600">Average Salary</div>
+                </div>
+                <div className="bg-spring-green-50 p-4 rounded-lg text-center">
+                  <div className="text-3xl font-bold text-spring-green-700">140+</div>
+                  <div className="text-sm text-moss-green-600">Occupations</div>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <Link href="/resources/massachusetts-job-data" legacyBehavior>
+                  <Button variant="outline" size="sm" className="text-moss-green-700">
+                    View Complete MA Job Report
+                  </Button>
+                </Link>
+            </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Massachusetts Clean Energy Sectors - New section */}
+      <Section className="py-12 bg-white">
+        <Container>
+          <h2 className="text-2xl font-bold mb-8 text-center">Massachusetts Clean Energy Sectors</h2>
+          
+          <div className="space-y-6">
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex border rounded-lg p-1 gap-1">
+                <button 
+                  onClick={() => setSelectedTab("all")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'all' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  All Sectors
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("wind")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'wind' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  Wind Energy
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("solar")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'solar' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  Solar
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("efficiency")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'efficiency' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  Energy Efficiency
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("transport")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'transport' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  Clean Transportation
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("grid")} 
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${selectedTab === 'grid' ? 'bg-spring-green-600 text-white' : 'hover:bg-spring-green-50'}`}
+                >
+                  Grid Modernization
+                </button>
+          </div>
+        </div>
+            
+            {/* Content for All Sectors tab */}
+            {selectedTab === 'all' && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-base-100 border-l-4 border-l-spring-green-500">
+                  <div className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-spring-green-50">
+                        <BoltIcon className="w-8 h-8 text-spring-green-700" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg">Offshore Wind</h3>
+                        <p className="text-moss-green-600 text-sm mb-2">174% Growth Projection</p>
+                        <p className="text-sm">Massachusetts is becoming a hub for offshore wind with major projects in New Bedford and along the coast.</p>
+                      </div>
+                    </div>
+                    <Link href="/jobs/sector/wind" className="text-spring-green-600 text-sm font-medium mt-4 inline-block hover:underline">
+                      View 175 offshore wind jobs →
+                    </Link>
+                  </div>
+                </Card>
+                
+                <Card className="bg-base-100 border-l-4 border-l-moss-green-500">
+                  <div className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-moss-green-50">
+                        <svg className="w-8 h-8 text-moss-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg">Solar Energy</h3>
+                        <p className="text-moss-green-600 text-sm mb-2">28% Growth Projection</p>
+                        <p className="text-sm">Solar installation and manufacturing continues to grow with SMART program incentives and community solar projects.</p>
+                      </div>
+                    </div>
+                    <Link href="/jobs/sector/solar" className="text-spring-green-600 text-sm font-medium mt-4 inline-block hover:underline">
+                      View 432 solar jobs →
+                    </Link>
+                  </div>
+                </Card>
+                
+                <Card className="bg-base-100 border-l-4 border-l-seafoam-blue-500">
+                  <div className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-spring-green-50">
+                        <svg className="w-8 h-8 text-spring-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg">Energy Efficiency</h3>
+                        <p className="text-moss-green-600 text-sm mb-2">42% Growth Projection</p>
+                        <p className="text-sm">Mass Save programs and building decarbonization initiatives create steady demand for efficiency experts.</p>
+                      </div>
+                    </div>
+                    <Link href="/jobs/sector/efficiency" className="text-spring-green-600 text-sm font-medium mt-4 inline-block hover:underline">
+                      View 580 energy efficiency jobs →
+                    </Link>
+                  </div>
+                </Card>
+              </div>
+            )}
+            
+            {/* Other tab content would go here */}
+            {selectedTab === 'wind' && (
+              <div className="text-center py-8">
+                <h3 className="text-xl font-bold mb-4">Offshore Wind Jobs</h3>
+                <p className="max-w-2xl mx-auto mb-8">
+                  Massachusetts is at the forefront of US offshore wind development with projects like Vineyard Wind and Mayflower Wind. 
+                  These projects are creating thousands of new jobs across construction, operations, maintenance, and support services.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Top Wind Energy Jobs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Wind Turbine Technician</span>
+                        <Badge className="bg-spring-green-50">$60K-75K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Offshore Site Manager</span>
+                        <Badge className="bg-spring-green-50">$90K-110K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Wind Project Engineer</span>
+                        <Badge className="bg-spring-green-50">$85K-105K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Marine Operations Specialist</span>
+                        <Badge className="bg-spring-green-50">$70K-90K</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Massachusetts Wind Hubs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>New Bedford</span>
+                        <Badge className="bg-moss-green-50">85 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Boston</span>
+                        <Badge className="bg-moss-green-50">52 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Salem</span>
+                        <Badge className="bg-moss-green-50">28 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Martha's Vineyard</span>
+                        <Badge className="bg-moss-green-50">10 jobs</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                </div>
+              </div>
+            )}
+            
+            {selectedTab === 'solar' && (
+              <div className="text-center py-8">
+                <h3 className="text-xl font-bold mb-4">Solar Energy Jobs</h3>
+                <p className="max-w-2xl mx-auto mb-8">
+                  Massachusetts has invested heavily in solar through the SMART program and community solar initiatives. 
+                  The state's solar workforce continues to grow with rising demand for residential and commercial installations.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Top Solar Jobs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Solar Installer</span>
+                        <Badge className="bg-spring-green-50">$50K-65K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>PV System Designer</span>
+                        <Badge className="bg-spring-green-50">$70K-85K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Solar Sales Consultant</span>
+                        <Badge className="bg-spring-green-50">$60K-90K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Solar Project Manager</span>
+                        <Badge className="bg-spring-green-50">$75K-95K</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Massachusetts Solar Hubs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Boston Metro</span>
+                        <Badge className="bg-moss-green-50">138 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Worcester</span>
+                        <Badge className="bg-moss-green-50">85 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Springfield</span>
+                        <Badge className="bg-moss-green-50">64 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Lowell</span>
+                        <Badge className="bg-moss-green-50">47 jobs</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                </div>
+              </div>
+            )}
+            
+            {selectedTab === 'efficiency' && (
+              <div className="text-center py-8">
+                <h3 className="text-xl font-bold mb-4">Energy Efficiency Jobs</h3>
+                <p className="max-w-2xl mx-auto mb-8">
+                  Massachusetts' award-winning Mass Save program and new building decarbonization initiatives 
+                  have created substantial demand for energy efficiency professionals across the Commonwealth.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Top Energy Efficiency Jobs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Energy Auditor</span>
+                        <Badge className="bg-spring-green-50">$55K-70K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>HVAC Efficiency Specialist</span>
+                        <Badge className="bg-spring-green-50">$65K-80K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Building Envelope Technician</span>
+                        <Badge className="bg-spring-green-50">$50K-65K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Energy Program Manager</span>
+                        <Badge className="bg-spring-green-50">$80K-100K</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Key Employers</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Mass Save</span>
+                        <Badge className="bg-moss-green-50">152 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Eversource</span>
+                        <Badge className="bg-moss-green-50">87 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>National Grid</span>
+                        <Badge className="bg-moss-green-50">76 jobs</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>CLEAResult</span>
+                        <Badge className="bg-moss-green-50">54 jobs</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                </div>
+              </div>
+            )}
+            
+            {selectedTab === 'transport' && (
+              <div className="text-center py-8">
+                <h3 className="text-xl font-bold mb-4">Clean Transportation Jobs</h3>
+                <p className="max-w-2xl mx-auto mb-8">
+                  Massachusetts is rapidly expanding its electric vehicle infrastructure and public transportation electrification, 
+                  creating diverse job opportunities in EV charging, fleet management, and green transportation planning.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Top Clean Transportation Jobs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>EV Charging Technician</span>
+                        <Badge className="bg-spring-green-50">$55K-70K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Fleet Electrification Manager</span>
+                        <Badge className="bg-spring-green-50">$85K-105K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>EV Infrastructure Planner</span>
+                        <Badge className="bg-spring-green-50">$70K-90K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Sustainable Transit Specialist</span>
+                        <Badge className="bg-spring-green-50">$65K-85K</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Recent MA Initiatives</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">New</Badge>
+                        <span>MBTA Bus Electrification Program</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">New</Badge>
+                        <span>MassDOT EV Infrastructure Plan</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">New</Badge>
+                        <span>Regional Electric School Bus Initiative</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">New</Badge>
+                        <span>Municipal Fleet Transition Program</span>
+                      </li>
+                    </ul>
+                  </Card>
+                </div>
+                  </div>
+            )}
+            
+            {selectedTab === 'grid' && (
+              <div className="text-center py-8">
+                <h3 className="text-xl font-bold mb-4">Grid Modernization Jobs</h3>
+                <p className="max-w-2xl mx-auto mb-8">
+                  As Massachusetts moves toward a cleaner, more resilient grid, demand is growing for 
+                  professionals who can design, implement, and maintain smart grid technologies and energy storage systems.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">Top Grid Modernization Jobs</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between">
+                        <span>Smart Grid Engineer</span>
+                        <Badge className="bg-spring-green-50">$90K-120K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Energy Storage Specialist</span>
+                        <Badge className="bg-spring-green-50">$85K-110K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Grid Resilience Analyst</span>
+                        <Badge className="bg-spring-green-50">$75K-95K</Badge>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Microgrid Project Manager</span>
+                        <Badge className="bg-spring-green-50">$95K-125K</Badge>
+                      </li>
+                    </ul>
+                  </Card>
+                  <Card className="bg-base-100 p-4 text-left">
+                    <h4 className="font-bold">MA Grid Initiatives</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">Active</Badge>
+                        <span>Resilient Municipal Microgrid Program</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">Active</Badge>
+                        <span>Clean Peak Energy Standard Projects</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">Active</Badge>
+                        <span>Utility-Scale Battery Storage Systems</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Badge className="bg-moss-green-50">Active</Badge>
+                        <span>Grid-Interactive Efficient Buildings</span>
+                      </li>
+                    </ul>
+                  </Card>
+                </div>
+              </div>
+            )}
+            
+            {/* Similar structures for other tabs */}
+          </div>
+        </Container>
+      </Section>
+
+      {/* Job Search Section */}
+      <Section className="py-12 bg-base-200">
+        <Container>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold">Massachusetts Clean Energy Jobs</h2>
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => setFiltersVisible(!filtersVisible)}
+            >
+              <FunnelIcon className="w-5 h-5" />
+              {filtersVisible ? "Hide Filters" : "Show Filters"}
+            </Button>
+          </div>
+          
+          <div className="grid gap-8" style={{ gridTemplateColumns: filtersVisible ? "300px 1fr" : "1fr" }}>
+            {/* Filters Panel - Collapsible */}
+            {filtersVisible && (
+              <Card className="bg-base-100 shadow-sm h-fit sticky top-24">
+                <div className="p-5 space-y-6">
+                  <h3 className="font-medium text-lg mb-1">Massachusetts Filters</h3>
+                  
+                  {/* Massachusetts Regions */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <MapPinIcon className="w-4 h-4 text-spring-green-600" />
+                      Massachusetts Regions
+                    </h4>
+                    <div className="space-y-2 pl-6">
+                      {["Greater Boston", "Worcester & MetroWest", "Northeast MA", "Southeast MA & Cape", "Western MA"].map(region => (
+                        <div key={region} className="flex items-center space-x-2">
+                          <Checkbox label={region} />
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                
+                  {/* Clean Energy Sectors */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <svg className="w-4 h-4 text-spring-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      Clean Energy Sectors
+                    </h4>
+                    <div className="space-y-2 pl-6">
+                      {[
+                        {name: "Offshore Wind", growth: "+174%"},
+                        {name: "Energy Efficiency", growth: "+42%"},
+                        {name: "Solar Energy", growth: "+28%"},
+                        {name: "Clean Transportation", growth: "+56%"},
+                        {name: "Grid Modernization", growth: "+35%"}
+                      ].map(sector => (
+                        <div key={sector.name} className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2 flex-1">
+                            <Checkbox label={sector.name} />
+                          </div>
+                          <Badge className="bg-spring-green-100 text-spring-green-800 text-xs">{sector.growth}</Badge>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                
+                {/* Experience Level */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <AcademicCapIcon className="w-4 h-4 text-spring-green-600" />
+                      Experience Level
+                    </h4>
+                    <div className="space-y-2 pl-6">
+                      {["Entry Level", "Mid Level", "Senior Level"].map(level => (
+                        <div key={level} className="flex items-center space-x-2">
+                          <Checkbox label={level} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* State Incentive Programs */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <BanknotesIcon className="w-4 h-4 text-spring-green-600" />
+                      State Incentive Programs
+                    </h4>
+                    <div className="space-y-2 pl-6">
+                      {[
+                        "MassCEC Internship",
+                        "Workforce Development Grant",
+                        "Clean Energy Tax Credit",
+                        "Apprenticeship Program"
+                      ].map(program => (
+                        <div key={program} className="flex items-center space-x-2">
+                          <Checkbox label={program} />
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                
+                  <div className="pt-2">
+                    <Button className="w-full bg-spring-green-600 hover:bg-spring-green-700">
+                      Apply Filters
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+            
+            {/* Job Listings */}
+            <div className="space-y-4">
+              {/* Featured Employers Header */}
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">Featured Massachusetts Employers</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">Sort by:</span>
+                  <select className="select select-sm select-bordered">
+                    <option>Most Relevant</option>
+                    <option>Newest</option>
+                    <option>Salary (High to Low)</option>
+                    <option>Salary (Low to High)</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Featured Employers */}
+              <div className="grid md:grid-cols-3 gap-4 mb-8">
+                <Card className="bg-base-100 transition-all hover:shadow-md">
+                  <div className="p-5">
+                    <div className="flex items-center gap-4">
+                      <Avatar size="lg" src="/images/employers/mayflower-energy.png" alt="Mayflower Energy" initials="ME" />
+                      <div>
+                        <h3 className="font-medium">Mayflower Energy</h3>
+                        <p className="text-sm text-base-content/70">Offshore Wind • Boston</p>
+                        <div className="flex gap-2 mt-1">
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">MassCEC Partner</Badge>
+                          <Badge className="bg-moss-green-50 text-moss-green-700 text-xs">12 Jobs</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="bg-base-100 transition-all hover:shadow-md">
+                  <div className="p-5">
+                    <div className="flex items-center gap-4">
+                      <Avatar size="lg" src="/images/employers/baystate-solar.png" alt="BayState Solar" initials="BS" />
+                      <div>
+                        <h3 className="font-medium">BayState Solar</h3>
+                        <p className="text-sm text-base-content/70">Solar Installation • Worcester</p>
+                        <div className="flex gap-2 mt-1">
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">Growing Fast</Badge>
+                          <Badge className="bg-moss-green-50 text-moss-green-700 text-xs">8 Jobs</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="bg-base-100 transition-all hover:shadow-md">
+                  <div className="p-5">
+                    <div className="flex items-center gap-4">
+                      <Avatar size="lg" src="/images/employers/mass-save.png" alt="Mass Save" initials="MS" />
+                      <div>
+                        <h3 className="font-medium">Mass Save</h3>
+                        <p className="text-sm text-base-content/70">Energy Efficiency • Statewide</p>
+                        <div className="flex gap-2 mt-1">
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">State Program</Badge>
+                          <Badge className="bg-moss-green-50 text-moss-green-700 text-xs">15 Jobs</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+              
+              {/* Job Listings */}
+              <div className="space-y-4">
+                {/* Job Card 1 */}
+                <Card className="bg-base-100 hover:shadow-md transition-all">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-bold">Offshore Wind Technician</h3>
+                          <Badge className="bg-spring-green-100 text-spring-green-700">New</Badge>
+                        </div>
+                        <p className="text-base-content/70 text-sm">Mayflower Energy • New Bedford, MA</p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Badge variant="outline" className="text-xs">Full-time</Badge>
+                          <Badge variant="outline" className="text-xs">Entry Level</Badge>
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">Offshore Wind</Badge>
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">MassCEC Apprenticeship</Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-spring-green-700">$65,000 - $75,000</div>
+                        <p className="text-xs text-base-content/70">Posted 2 days ago</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-sm">Join Massachusetts' growing offshore wind sector with hands-on technical work maintaining wind turbines. No prior experience required - training provided through MassCEC's Offshore Wind Works program.</p>
+                    <div className="flex justify-between mt-6 items-center">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm" src="/images/employers/mayflower-energy.png" alt="Mayflower Energy" initials="ME" />
+                        <span className="text-sm font-medium">Mayflower Energy</span>
+                      </div>
+                      <Link href="/jobs/1" legacyBehavior>
+                        <Button>View Job</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+                
+                {/* Job Card 2 */}
+                <Card className="bg-base-100 hover:shadow-md transition-all">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold mb-1">Energy Efficiency Analyst</h3>
+                        <p className="text-base-content/70 text-sm">Mass Save • Boston, MA</p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Badge variant="outline" className="text-xs">Full-time</Badge>
+                          <Badge variant="outline" className="text-xs">Mid Level</Badge>
+                          <Badge className="bg-moss-green-50 text-moss-green-700 text-xs">Energy Efficiency</Badge>
+                          <Badge className="bg-sand-gray-50 text-sand-gray-700 text-xs">Remote Option</Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-spring-green-700">$80,000 - $95,000</div>
+                        <p className="text-xs text-base-content/70">Posted 1 week ago</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-sm">Help Massachusetts businesses and homeowners save energy and money through the state's award-winning energy efficiency programs. Analyze building performance and recommend improvements.</p>
+                    <div className="flex justify-between mt-6 items-center">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm" src="/images/employers/mass-save.png" alt="Mass Save" initials="MS" />
+                        <span className="text-sm font-medium">Mass Save</span>
+                      </div>
+                      <Link href="/jobs/2" legacyBehavior>
+                        <Button>View Job</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+                
+                {/* Job Card 3 */}
+                <Card className="bg-base-100 hover:shadow-md transition-all">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold mb-1">Solar Installation Crew Lead</h3>
+                        <p className="text-base-content/70 text-sm">BayState Solar • Worcester, MA</p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Badge variant="outline" className="text-xs">Full-time</Badge>
+                          <Badge variant="outline" className="text-xs">Mid Level</Badge>
+                          <Badge className="bg-moss-green-50 text-moss-green-700 text-xs">Solar Energy</Badge>
+                          <Badge className="bg-spring-green-50 text-spring-green-700 text-xs">Clean Energy Tax Credit</Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-spring-green-700">$70,000 - $85,000</div>
+                        <p className="text-xs text-base-content/70">Posted 3 days ago</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-sm">Lead a team installing residential and commercial solar systems across Central Massachusetts. Experience with rooftop solar preferred. Company vehicle provided.</p>
+                    <div className="flex justify-between mt-6 items-center">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm" src="/images/employers/baystate-solar.png" alt="BayState Solar" initials="BS" />
+                        <span className="text-sm font-medium">BayState Solar</span>
+                      </div>
+                      <Link href="/jobs/3" legacyBehavior>
+                        <Button>View Job</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+                
+                {/* Show more jobs button */}
+                <div className="flex justify-center mt-8">
+                  <Button variant="outline" className="min-w-[200px]">
+                    Load More Jobs
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+      
+      {/* Call to Action - Updated for better conversion */}
+      <Section className="py-20 bg-gradient-to-br from-spring-green-50 to-moss-green-50/30">
+        <Container className="max-w-4xl text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to join Massachusetts' clean energy workforce?
+          </h2>
+          <p className="text-xl text-moss-green-800 mb-8">
+            Create your profile to get matched with high-growth opportunities across the Commonwealth. 
+            Our AI-powered platform will find the perfect Massachusetts clean energy jobs for your skills.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/auth/signup" legacyBehavior>
+              <Button size="lg" className="bg-spring-green-600 hover:bg-spring-green-700">
+              Create Your Profile
+                <ArrowRightIcon className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/resources/massachusetts" legacyBehavior>
+              <Button variant="outline" size="lg" className="border-moss-green-500 text-moss-green-700">
+              Explore Resources
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              </Button>
+            </Link>
+          </div>
+        </Container>
+      </Section>
+    </div>
+  )
+}

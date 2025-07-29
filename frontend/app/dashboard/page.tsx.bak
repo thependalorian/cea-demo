@@ -1,0 +1,474 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { Section } from '@/components/ui/section';
+import { Container } from '@/components/ui/container';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+// Define types for dashboard data
+interface DashboardStats {
+  totalConversations: number;
+  savedJobs: number;
+  upcomingMeetings: number;
+  completedSessions: number;
+}
+
+interface UpcomingBooking {
+  id: string;
+  agent_name: string;
+  team_name: string;
+  datetime: string;
+  duration_minutes: number;
+  status: 'pending' | 'confirmed' | 'cancelled';
+}
+
+interface RecentActivity {
+  type: 'conversation' | 'job_saved' | 'booking_created' | 'session_completed';
+  title: string;
+  date: string;
+  agent?: string;
+}
+
+const SettingsForm = dynamic(() => import('@/components/SettingsForm'), { ssr: false });
+const MassachusettsWorkforcePricing = dynamic(() => import('@/components/MassachusettsWorkforcePricing'), { ssr: false });
+
+const DashboardPage = () => {
+  const { user, profile, loading } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalConversations: 0,
+    savedJobs: 0,
+    upcomingMeetings: 0,
+    completedSessions: 0
+  });
+  const [upcomingBookings, setUpcomingBookings] = useState<UpcomingBooking[]>([]);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+
+  // DEMO MODE: Use a demo name if user is not authenticated
+  const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Demo User';
+
+  // DEMO MODE: Auth redirect is disabled to allow visitors to explore the dashboard
+  // In a production environment, uncomment this code to enable authentication
+  /*
+  useEffect(() => {
+    if (!loading && !user) {
+      // User is not authenticated, redirect to login
+      window.location.href = '/auth/login';
+      return;
+    }
+  }, [user, loading]);
+
+  // Don't render anything if not authenticated
+  if (!loading && !user) {
+    return null;
+  }
+  */
+  
+  useEffect(() => {
+    // DEMO MODE: Add a slight delay and use mock data if user is not authenticated
+    if (user) {
+      fetchDashboardData();
+    } else {
+      // Use mock data for demo mode
+      setTimeout(() => {
+        setStats({
+          totalConversations: 14,
+          savedJobs: 8,
+          upcomingMeetings: 2,
+          completedSessions: 12
+        });
+        
+        // Mock upcoming bookings
+        setUpcomingBookings([
+          {
+            id: 'demo-1',
+            agent_name: 'Sarah Johnson',
+            team_name: 'Career Advisor Team',
+            datetime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+            duration_minutes: 30,
+            status: 'confirmed'
+          },
+          {
+            id: 'demo-2',
+            agent_name: 'Michael Chen',
+            team_name: 'Technical Skills Team',
+            datetime: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
+            duration_minutes: 45,
+            status: 'pending'
+          }
+        ]);
+        
+        // Mock recent activity
+        setRecentActivity([
+          {
+            type: 'conversation',
+            title: 'Career Path Discussion',
+            date: new Date().toLocaleDateString(),
+            agent: 'CEA Career Advisor'
+          },
+          {
+            type: 'job_saved',
+            title: 'Solar Installation Manager',
+            date: new Date(Date.now() - 86400000).toLocaleDateString(),
+          },
+          {
+            type: 'conversation',
+            title: 'Resume Review Session',
+            date: new Date(Date.now() - 172800000).toLocaleDateString(),
+            agent: 'Resume Expert'
+          }
+        ]);
+        
+        setIsStatsLoading(false);
+      }, 800);
+    }
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    setIsStatsLoading(true);
+    try {
+      // Fetch analytics data
+      const analyticsResponse = await fetch('/api/v1/analytics?user_type=job_seeker&time_range=30d');
+      if (analyticsResponse.ok) {
+        const analyticsData = await analyticsResponse.json();
+        if (analyticsData.success && analyticsData.data) {
+          setStats({
+            totalConversations: analyticsData.data.overview?.total_conversations || 0,
+            savedJobs: analyticsData.data.overview?.total_saved_jobs || 0,
+            upcomingMeetings: 0, // Will be updated from bookings API
+            completedSessions: analyticsData.data.overview?.total_conversations || 0
+          });
+          
+          setRecentActivity(analyticsData.data.activity_timeline?.map((activity: unknown) => ({
+            type: 'conversation',
+            title: activity.title || 'Chat Session',
+            date: new Date(activity.date).toLocaleDateString(),
+            agent: activity.agent
+          })) || []);
+        }
+      }
+
+      // Fetch upcoming bookings
+      const bookingsResponse = await fetch('/api/v1/booking?status=pending,confirmed');
+      if (bookingsResponse.ok) {
+        const bookingsData = await bookingsResponse.json();
+        const upcomingBookingsList = bookingsData.bookings?.filter((booking: unknown) => {
+          const bookingDate = new Date(booking.datetime);
+          return bookingDate > new Date();
+        }) || [];
+        
+        setUpcomingBookings(upcomingBookingsList);
+        setStats(prev => ({ ...prev, upcomingMeetings: upcomingBookingsList.length }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setIsStatsLoading(false);
+    }
+  };
+
+  if (loading || isStatsLoading) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg text-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-base-200">
+      {/* Welcome Section */}
+      <Section className="bg-gradient-to-r from-primary/10 to-secondary/10 py-8">
+        <Container>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-base-content">
+                Welcome back, {fullName}!
+              </h1>
+              <p className="text-base-content/70 mt-2">
+                Your clean energy career journey continues here.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/chat" legacyBehavior>
+                <Button>
+                  Start Chat Session
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.846-.461l-4.5 1.5 1.5-4.5A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+                  </svg>
+                </Button>
+              </Link>
+              <Link href="/booking" legacyBehavior>
+                <Button variant="secondary">
+                  Book Consultation
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Stats Overview */}
+      <Section className="py-8">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-primary">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.846-.461l-4.5 1.5 1.5-4.5A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+                </svg>
+              </div>
+              <div className="stat-title">Chat Sessions</div>
+              <div className="stat-value text-primary">{stats.totalConversations}</div>
+              <div className="stat-desc">
+                <Link href="/chat" className="link link-primary">Start new chat</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-secondary">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <div className="stat-title">Saved Jobs</div>
+              <div className="stat-value text-secondary">{stats.savedJobs}</div>
+              <div className="stat-desc">
+                <Link href="/jobs" className="link link-secondary">Browse more jobs</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-accent">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="stat-title">Upcoming Sessions</div>
+              <div className="stat-value text-accent">{stats.upcomingMeetings}</div>
+              <div className="stat-desc">
+                <Link href="/profile?tab=bookings" className="link link-accent">Manage bookings</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-success">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="stat-title">Completed Sessions</div>
+              <div className="stat-value text-success">{stats.completedSessions}</div>
+              <div className="stat-desc">Total progress</div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Main Content Grid */}
+      <Section className="py-8">
+        <Container>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Quick Actions */}
+            <div className="lg:col-span-1">
+              <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h2 className="card-title text-2xl mb-6">Quick Actions</h2>
+                  <div className="space-y-4">
+                    <Link href="/chat" className="btn btn-primary w-full justify-start">
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.846-.461l-4.5 1.5 1.5-4.5A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+                      </svg>
+                      Start AI Chat Session
+                    </Link>
+                    
+                    <Link href="/booking" className="btn btn-secondary w-full justify-start">
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Book Consultation
+                    </Link>
+                    
+                    <Link href="/jobs" className="btn btn-accent w-full justify-start">
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                      </svg>
+                      Browse Jobs
+                    </Link>
+                    
+                    <Link href="/profile" className="btn btn-outline w-full justify-start">
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Update Profile
+                    </Link>
+                    
+                    <Link href="/dashboard/analytics" className="btn btn-ghost w-full justify-start">
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      View Analytics
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Demo Navigation Helper */}
+              <div className="card bg-gradient-to-r from-spring-green/10 to-moss-green/10 shadow-sm border border-spring-green/20">
+                <div className="card-body p-4">
+                                     <h3 className="card-title text-lg flex items-center">
+                     Demo Mode - Explore Different Perspectives
+                   </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    You&apos;re viewing the <strong>Job Seeker Dashboard</strong>. Try other demo areas to see the full platform:
+                  </p>
+                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                     <Link href="/partner/dashboard" className="btn btn-outline btn-sm">
+                       Partner Dashboard - Employer view of hiring and talent management
+                     </Link>
+                     <Link href="/admin/dashboard" className="btn btn-outline btn-sm">
+                       Admin Dashboard - Platform administration and analytics
+                     </Link>
+                   </div>
+                  <div className="mt-3 pt-3 border-t border-spring-green/20">
+                                         <p className="text-xs text-gray-500">
+                       <strong>Tip:</strong> Each demo area showcases different features and user experiences. 
+                       Use the navigation menu at the top to explore public pages like Jobs, Resources, and Chat (with your OpenAI API key).
+                     </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Upcoming Bookings */}
+              <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="card-title text-2xl">Upcoming Sessions</h2>
+                    <Link href="/booking" className="btn btn-outline btn-sm">Book New Session</Link>
+                  </div>
+                  
+                  {upcomingBookings.length > 0 ? (
+                    <div className="space-y-4">
+                      {upcomingBookings.slice(0, 3).map((booking) => (
+                        <div key={booking.id} className="border border-base-300 rounded-lg p-4">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h3 className="font-bold text-lg">
+                                {booking.agent_name || booking.team_name}
+                              </h3>
+                              <p className="text-base-content/70">
+                                {new Date(booking.datetime).toLocaleDateString()} at{' '}
+                                {new Date(booking.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <span className={`badge ${
+                                booking.status === 'confirmed' ? 'badge-success' : 
+                                booking.status === 'pending' ? 'badge-warning' : 'badge-error'
+                              }`}>
+                                {booking.status}
+                              </span>
+                              <p className="text-sm text-base-content/60 mt-1">
+                                {booking.duration_minutes} min
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button className="btn btn-primary btn-sm">Join Session</button>
+                            <button className="btn btn-outline btn-sm">Reschedule</button>
+                            <button className="btn btn-ghost btn-sm">Cancel</button>
+                          </div>
+                        </div>
+                      ))}
+                      {upcomingBookings.length > 3 && (
+                        <div className="text-center">
+                          <Link href="/profile?tab=bookings" className="btn btn-outline btn-sm">
+                            View All Bookings
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-base-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-base-content/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium mb-2">No Upcoming Sessions</h3>
+                      <p className="text-base-content/70 mb-4">
+                        Book a consultation with our climate career experts to accelerate your job search.
+                      </p>
+                      <Link href="/booking" className="btn btn-primary">
+                        Book Your First Session
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h2 className="card-title text-2xl mb-6">Recent Activity</h2>
+                  
+                  {recentActivity.length > 0 ? (
+                    <div className="space-y-3">
+                      {recentActivity.slice(0, 5).map((activity, index) => (
+                        <div key={index} className="flex items-center gap-4 p-3 border border-base-300 rounded-lg">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.846-.461l-4.5 1.5 1.5-4.5A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-medium">{activity.title}</h3>
+                            <p className="text-sm text-base-content/70">
+                              {activity.agent && `with ${activity.agent} • `}{activity.date}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-base-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-base-content/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium mb-2">No Recent Activity</h3>
+                      <p className="text-base-content/70">
+                        Start chatting with our AI career assistants to begin your journey.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="py-8">
+        <Container>
+          <SettingsForm />
+          <MassachusettsWorkforcePricing />
+        </Container>
+      </Section>
+    </div>
+  );
+};
+
+export default DashboardPage;

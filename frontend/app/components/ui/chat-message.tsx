@@ -1,0 +1,302 @@
+/**
+ * ChatMessage Component - ACT Climate Economy Assistant
+ * 
+ * Purpose: Display AI and user messages in chat interface
+ * Location: /app/components/ui/chat-message.tsx
+ * Used by: Chat pages and conversation interfaces
+ * 
+ * Features:
+ * - Message bubbles with distinct styling for AI and human
+ * - Support for markdown content
+ * - Code block syntax highlighting
+ * - Typing animation for AI responses
+ * - Massachusetts climate branding
+ */
+
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { User, Bot, Check, Copy, RefreshCw, ThumbsUp, ThumbsDown } from "lucide-react"
+import ReactMarkdown from "react-markdown"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
+
+import { cn } from "@/lib/utils"
+import { Avatar } from "./avatar"
+import { Button } from "./button"
+
+// Message container variants
+const messageContainerVariants = cva(
+  "flex w-full mb-4 animate-message-appear",
+  {
+    variants: {
+      role: {
+        user: "justify-end",
+        assistant: "justify-start",
+        system: "justify-center",
+      },
+    },
+    defaultVariants: {
+      role: "user",
+    },
+  }
+)
+
+// Message bubble variants
+const messageBubbleVariants = cva(
+  "relative max-w-[85%] md:max-w-[75%] rounded-lg px-4 py-3 text-sm md:text-base",
+  {
+    variants: {
+      role: {
+        user: "bg-spring-green-100 text-midnight-forest-900 rounded-tr-none",
+        assistant: "bg-spring-green-50 text-midnight-forest-900 rounded-tl-none border border-spring-green-200",
+        system: "bg-sand-gray-100 text-sand-gray-800 border border-sand-gray-200",
+      },
+    },
+    defaultVariants: {
+      role: "user",
+    },
+  }
+)
+
+export interface ChatMessageProps extends React.HTMLAttributes<HTMLDivElement> {
+  content: string
+  role: "user" | "assistant" | "system"
+  timestamp?: Date
+  isLoading?: boolean
+  showAvatar?: boolean
+  showTimestamp?: boolean
+  showActions?: boolean
+  onRegenerate?: () => void
+  onCopy?: () => void
+  onFeedback?: (type: "positive" | "negative") => void
+  avatarUrl?: string
+  avatarFallback?: string
+}
+
+export function ChatMessage({
+  content,
+  role,
+  timestamp,
+  isLoading = false,
+  showAvatar = true,
+  showTimestamp = true,
+  showActions = true,
+  onRegenerate,
+  onCopy,
+  onFeedback,
+  avatarUrl,
+  avatarFallback,
+  className,
+  ...props
+}: ChatMessageProps) {
+  const [isCopied, setIsCopied] = React.useState(false)
+  const [feedback, setFeedback] = React.useState<"positive" | "negative" | null>(null)
+
+  // Format timestamp
+  const formattedTime = timestamp 
+    ? new Intl.DateTimeFormat('en-US', { 
+        hour: 'numeric', 
+        minute: 'numeric',
+        hour12: true 
+      }).format(timestamp)
+    : ''
+
+  // Handle copy action
+  const handleCopy = () => {
+    if (onCopy) {
+      onCopy()
+    } else {
+      navigator.clipboard.writeText(content)
+    }
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 2000)
+  }
+
+  // Handle feedback
+  const handleFeedback = (type: "positive" | "negative") => {
+    if (onFeedback) {
+      onFeedback(type)
+    }
+    setFeedback(type)
+  }
+
+  return (
+    <div
+      className={cn(
+        messageContainerVariants({ role }),
+        className
+      )}
+      {...props}
+    >
+      {/* Avatar (left side for assistant, right side for user) */}
+      {showAvatar && role !== "system" && (
+        <div className={cn(
+          "flex-shrink-0",
+          role === "assistant" ? "mr-2" : "ml-2 order-2"
+        )}>
+          <Avatar
+            size="sm"
+            src={avatarUrl}
+            initials={avatarFallback || (role === "assistant" ? "AI" : "You")}
+            className={cn(
+              role === "assistant" ? "bg-spring-green-100 text-spring-green-700" : 
+                                   "bg-spring-green-100 text-spring-green-700"
+            )}
+          >
+            {!avatarUrl && (
+              role === "assistant" ? 
+                <Bot className="h-4 w-4" /> : 
+                <User className="h-4 w-4" />
+            )}
+          </Avatar>
+        </div>
+      )}
+
+      {/* Message content */}
+      <div className={cn(
+        messageBubbleVariants({ role }),
+        role === "system" && "text-center",
+      )}>
+        {/* Loading animation */}
+        {isLoading && role === "assistant" && (
+          <div className="flex items-center space-x-1 h-6">
+            <div className="w-2 h-2 rounded-full bg-spring-green-400 animate-typing-dots delay-0"></div>
+            <div className="w-2 h-2 rounded-full bg-spring-green-400 animate-typing-dots delay-150"></div>
+            <div className="w-2 h-2 rounded-full bg-spring-green-400 animate-typing-dots delay-300"></div>
+          </div>
+        )}
+
+        {/* Markdown content */}
+        {!isLoading && (
+          <div className="prose prose-sm max-w-none">
+            <ReactMarkdown
+              components={{
+                // Style code blocks with syntax highlighting
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={atomDark}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={cn("bg-sand-gray-100 px-1 py-0.5 rounded text-midnight-forest-800", className)} {...props}>
+                      {children}
+                    </code>
+                  )
+                },
+                // Style links
+                a: ({ node, ...props }) => (
+                  <a 
+                    className="text-spring-green-600 hover:text-spring-green-800 underline" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    {...props}
+                  />
+                ),
+                // Style headings
+                h1: ({ node, ...props }) => (
+                  <h1 className="text-xl font-bold mt-6 mb-4 text-midnight-forest-900" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-lg font-bold mt-5 mb-3 text-midnight-forest-900" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-md font-bold mt-4 mb-2 text-midnight-forest-900" {...props} />
+                ),
+                // Style lists
+                ul: ({ node, ...props }) => (
+                  <ul className="list-disc pl-5 my-2" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="list-decimal pl-5 my-2" {...props} />
+                ),
+                // Style paragraphs
+                p: ({ node, ...props }) => (
+                  <p className="my-2" {...props} />
+                ),
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
+        )}
+
+        {/* Message actions */}
+        {showActions && role === "assistant" && !isLoading && (
+          <div className="flex justify-end gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Copy button */}
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={handleCopy}
+              className="text-sand-gray-500 hover:text-midnight-forest-700"
+            >
+              {isCopied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+              {isCopied ? "Copied" : "Copy"}
+            </Button>
+
+            {/* Regenerate button */}
+            {onRegenerate && (
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={onRegenerate}
+                className="text-sand-gray-500 hover:text-midnight-forest-700"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Regenerate
+              </Button>
+            )}
+
+            {/* Feedback buttons */}
+            {onFeedback && (
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => handleFeedback("positive")}
+                  className={cn(
+                    "text-sand-gray-500 hover:text-spring-green-700",
+                    feedback === "positive" && "text-spring-green-700 bg-spring-green-50"
+                  )}
+                  aria-label="Helpful"
+                >
+                  <ThumbsUp className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => handleFeedback("negative")}
+                  className={cn(
+                    "text-sand-gray-500 hover:text-red-700",
+                    feedback === "negative" && "text-red-700 bg-red-50"
+                  )}
+                  aria-label="Not helpful"
+                >
+                  <ThumbsDown className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Timestamp */}
+        {showTimestamp && timestamp && (
+          <div className={cn(
+            "text-xs text-sand-gray-500 mt-1",
+            role === "user" ? "text-right" : "text-left"
+          )}>
+            {formattedTime}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export { messageContainerVariants, messageBubbleVariants } 

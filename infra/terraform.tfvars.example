@@ -1,0 +1,82 @@
+# ===========================================================================
+# PENDO CLIMATE ECONOMY ASSISTANT - TERRAFORM CONFIGURATION
+# ===========================================================================
+# Copy this file to terraform.tfvars and update with your values
+
+# ===========================================================================
+# PROJECT CONFIGURATION
+# ===========================================================================
+
+# Your Google Cloud Project ID
+project_id = "your-gcp-project-id"
+
+# Google Cloud Region (choose based on your location)
+# Available regions: us-central1, us-east1, us-west1, europe-west1, asia-southeast1
+region = "us-central1"
+
+# Domain name for your frontend (must be verified in Google Cloud)
+frontend_domain = "cea.yourdomain.com"
+
+# ===========================================================================
+# AGENT API SCALING CONFIGURATION
+# ===========================================================================
+
+# Minimum instances (0 = scale to zero when no traffic)
+agent_api_min_instances = 0
+
+# Maximum instances for auto-scaling
+agent_api_max_instances = 10
+
+# Resource allocation for Agent API
+agent_api_cpu_limit      = "2"     # CPU cores
+agent_api_memory_limit   = "4Gi"   # Memory limit
+agent_api_cpu_request    = "1"     # CPU request
+agent_api_memory_request = "2Gi"   # Memory request
+
+# ===========================================================================
+# RAG PIPELINE API SCALING CONFIGURATION
+# ===========================================================================
+
+# Minimum instances for RAG Pipeline (0 = scale to zero when no traffic)
+rag_api_min_instances = 0
+
+# Maximum instances for RAG Pipeline auto-scaling
+rag_api_max_instances = 5
+
+# Resource allocation for RAG Pipeline API
+rag_api_cpu_limit      = "2"     # CPU cores
+rag_api_memory_limit   = "4Gi"   # Memory limit
+rag_api_cpu_request    = "1"     # CPU request
+rag_api_memory_request = "2Gi"   # Memory request
+
+# ===========================================================================
+# COST OPTIMIZATION & MONITORING
+# ===========================================================================
+
+# Enable monitoring and alerting (recommended for production)
+enable_monitoring = true
+
+# Storage lifecycle management (days)
+storage_lifecycle_age = 30
+
+# Document retention period (days)
+document_retention_days = 1
+
+# ===========================================================================
+# ENVIRONMENT VARIABLES (Optional)
+# ===========================================================================
+# Uncomment and configure as needed for your specific setup
+
+# agent_env = {
+#   "OPENAI_API_KEY"     = "your-openai-api-key"
+#   "SUPABASE_URL"       = "your-supabase-url"
+#   "SUPABASE_KEY"       = "your-supabase-anon-key"
+#   "LOG_LEVEL"          = "INFO"
+# }
+
+# rag_env = {
+#   "SUPABASE_URL"       = "your-supabase-url"
+#   "SUPABASE_KEY"       = "your-supabase-anon-key"
+#   "EMBEDDING_MODEL"    = "text-embedding-3-small"
+#   "LOG_LEVEL"          = "INFO"
+# }

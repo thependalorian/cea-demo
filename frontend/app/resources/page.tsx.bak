@@ -1,0 +1,374 @@
+'use client';
+
+import React from 'react'
+import Link from 'next/link'
+
+export default function ResourcesPage() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      {/* Hero Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold mb-6">
+            Massachusetts Clean Energy <span className="text-primary">Resources</span>
+          </h1>
+          <p className="text-xl text-base-content/70 mb-8">
+            Expert guidance and tools to help you succeed in the Commonwealth&apos;s growing climate economy
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="#training" className="btn btn-primary">
+              Training Programs
+            </Link>
+            <Link href="#guides" className="btn btn-outline">
+              Career Guides
+            </Link>
+            <Link href="#events" className="btn btn-outline">
+              Local Events
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Resources */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Featured Massachusetts Resources</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* MassCEC Clean Energy Report */}
+            <div className="card bg-base-100 shadow-lg overflow-hidden">
+              <div className="h-48 bg-primary/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="card-body">
+                <div className="badge badge-primary mb-2">Industry Report</div>
+                <h3 className="card-title text-xl">2024 Massachusetts Clean Energy Job Market Report</h3>
+                <p className="text-base-content/70">
+                  Comprehensive analysis of hiring trends, salary data, and growth projections across Massachusetts&apos; clean energy sectors, with regional breakdowns.
+                </p>
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-sm text-base-content/60">Updated: March 2024</span>
+                  <Link href="/resources/reports/massachusetts-job-market" className="btn btn-primary btn-sm">
+                    Read Report
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Massachusetts Skills Guide */}
+            <div className="card bg-base-100 shadow-lg overflow-hidden">
+              <div className="h-48 bg-secondary/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div className="card-body">
+                <div className="badge badge-secondary mb-2">Skills Guide</div>
+                <h3 className="card-title text-xl">Top 10 In-Demand Massachusetts Clean Energy Skills</h3>
+                <p className="text-base-content/70">
+                  Essential skills Massachusetts employers are looking for in 2024, with local training resources to develop each skill.
+                </p>
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-sm text-base-content/60">15 min read</span>
+                  <Link href="/resources/skills/massachusetts-top-skills" className="btn btn-secondary btn-sm">
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Massachusetts Training Programs */}
+      <section id="training" className="py-16 bg-base-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">MassCEC Training Programs</h2>
+          <p className="text-center text-base-content/70 max-w-3xl mx-auto mb-12">
+                            State-approved training programs to help you build the skills needed for Massachusetts&apos; clean energy workforce
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Training Program 1 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <h3 className="card-title">Offshore Wind Technician Training</h3>
+                <p className="text-base-content/70 mb-4">
+                  MassCEC-funded program at Massachusetts Maritime Academy. Earn GWO certification for offshore wind careers.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="badge badge-outline">New Bedford</div>
+                  <div className="badge badge-outline">8 weeks</div>
+                  <div className="badge badge-primary">Scholarships Available</div>
+                </div>
+                <Link href="/resources/training/offshore-wind-technician" className="btn btn-sm btn-primary w-full">
+                  Program Details
+                </Link>
+              </div>
+            </div>
+
+            {/* Training Program 2 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <h3 className="card-title">Clean Energy Certificate Program</h3>
+                <p className="text-base-content/70 mb-4">
+                  Greenfield Community College&apos;s comprehensive program covering solar, energy efficiency, and grid modernization.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="badge badge-outline">Greenfield</div>
+                  <div className="badge badge-outline">16 weeks</div>
+                  <div className="badge badge-primary">College Credit</div>
+                </div>
+                <Link href="/resources/training/clean-energy-certificate" className="btn btn-sm btn-primary w-full">
+                  Program Details
+                </Link>
+              </div>
+            </div>
+
+            {/* Training Program 3 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <h3 className="card-title">Building Decarbonization Training</h3>
+                <p className="text-base-content/70 mb-4">
+                  Specialized training for contractors on heat pump installation and building electrification techniques.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="badge badge-outline">Multiple Locations</div>
+                  <div className="badge badge-outline">4 weeks</div>
+                  <div className="badge badge-primary">Mass Save Partner</div>
+                </div>
+                <Link href="/resources/training/building-decarbonization" className="btn btn-sm btn-primary w-full">
+                  Program Details
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/resources/training/massachusetts" className="btn btn-outline">
+              View All Massachusetts Training Programs
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Massachusetts Career Guides */}
+      <section id="guides" className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">Massachusetts Career Resources</h2>
+          <p className="text-center text-base-content/70 max-w-3xl mx-auto mb-12">
+            Expert guides to help you navigate the Commonwealth&apos;s clean energy economy
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Guide 1 */}
+            <div className="card bg-base-100 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-center">Massachusetts Clean Energy Incentives Guide</h3>
+                <p className="text-center text-base-content/70">
+                  Comprehensive overview of state incentives, rebates, and tax credits for clean energy careers.
+                </p>
+                <div className="card-actions justify-center mt-4">
+                  <Link href="/resources/guides/massachusetts-incentives" className="btn btn-sm btn-primary">
+                    Read Guide
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Guide 2 */}
+            <div className="card bg-base-100 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-center">Massachusetts Certification Directory</h3>
+                <p className="text-center text-base-content/70">
+                  Complete guide to Massachusetts-recognized clean energy certifications and credentials.
+                </p>
+                <div className="card-actions justify-center mt-4">
+                  <Link href="/resources/guides/massachusetts-certifications" className="btn btn-sm btn-primary">
+                    Read Guide
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Guide 3 */}
+            <div className="card bg-base-100 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-center">Massachusetts Climate Policy Timeline</h3>
+                <p className="text-center text-base-content/70">
+                  Key Massachusetts climate policies and their impact on clean energy job growth through 2030.
+                </p>
+                <div className="card-actions justify-center mt-4">
+                  <Link href="/resources/guides/massachusetts-policy-timeline" className="btn btn-sm btn-primary">
+                    Read Guide
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Guide 4 */}
+            <div className="card bg-base-100 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-center">Career Transition Guide for Massachusetts Workers</h3>
+                <p className="text-center text-base-content/70">
+                  Step-by-step guide for transitioning from traditional industries to clean energy in Massachusetts.
+                </p>
+                <div className="card-actions justify-center mt-4">
+                  <Link href="/resources/guides/massachusetts-career-transition" className="btn btn-sm btn-primary">
+                    Read Guide
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Massachusetts Events */}
+      <section id="events" className="py-16 bg-base-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">Massachusetts Clean Energy Events</h2>
+          <p className="text-center text-base-content/70 max-w-3xl mx-auto mb-12">
+            Networking opportunities and industry events across the Commonwealth
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Event 1 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="badge badge-primary">Networking</div>
+                  <div className="bg-base-100 px-3 py-2 rounded-lg text-center">
+                    <div className="text-lg font-bold">APR</div>
+                    <div className="text-2xl font-bold">15</div>
+                  </div>
+                </div>
+                <h3 className="card-title">Massachusetts Clean Energy Networking Night</h3>
+                <p className="text-base-content/70 mb-2">
+                  Connect with leading Massachusetts clean energy employers and professionals.
+                </p>
+                <p className="text-sm font-medium mb-4">
+                  Greentown Labs, Somerville • 6:00 PM - 8:30 PM
+                </p>
+                <Link href="/resources/events/networking-night" legacyBehavior>
+                  <a className="btn btn-sm btn-primary w-full">
+                    Register
+                  </a>
+                </Link>
+              </div>
+            </div>
+
+            {/* Event 2 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="badge badge-secondary">Conference</div>
+                  <div className="bg-base-100 px-3 py-2 rounded-lg text-center">
+                    <div className="text-lg font-bold">MAY</div>
+                    <div className="text-2xl font-bold">3-4</div>
+                  </div>
+                </div>
+                <h3 className="card-title">Massachusetts Offshore Wind Conference</h3>
+                <p className="text-base-content/70 mb-2">
+                  Annual gathering of Massachusetts&apos; offshore wind industry with job fair.
+                </p>
+                <p className="text-sm font-medium mb-4">
+                  New Bedford Marine Commerce Terminal • 9:00 AM - 5:00 PM
+                </p>
+                <Link href="/resources/events/offshore-wind-conference" legacyBehavior>
+                  <a className="btn btn-sm btn-primary w-full">
+                    Register
+                  </a>
+                </Link>
+              </div>
+            </div>
+
+            {/* Event 3 */}
+            <div className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="badge badge-accent">Workshop</div>
+                  <div className="bg-base-100 px-3 py-2 rounded-lg text-center">
+                    <div className="text-lg font-bold">MAY</div>
+                    <div className="text-2xl font-bold">18</div>
+                  </div>
+                </div>
+                <h3 className="card-title">Clean Energy Resume Workshop</h3>
+                <p className="text-base-content/70 mb-2">
+                  Free resume review and career coaching with Massachusetts clean energy employers.
+                </p>
+                <p className="text-sm font-medium mb-4">
+                  Worcester CleanTech Incubator • 10:00 AM - 2:00 PM
+                </p>
+                <Link href="/resources/events/resume-workshop" legacyBehavior>
+                  <a className="btn btn-sm btn-primary w-full">
+                    Register
+                  </a>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/resources/events/massachusetts" legacyBehavior>
+              <a className="btn btn-outline">
+                View All Massachusetts Events
+              </a>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-to-br from-spring-green-50 to-moss-green-50/30 animate-gentle-breathe">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-title font-bold mb-6">
+            Ready to Join Massachusetts&apos; Clean Energy Workforce?
+          </h2>
+          <p className="text-xl text-moss-green-800 mb-8">
+            Create your profile to get personalized Massachusetts clean energy resources and job matches.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/auth/signup" legacyBehavior>
+              <a className="btn btn-primary text-midnight-forest btn-lg shadow-button hover:shadow-hover transform transition-all duration-250 hover:scale-[1.02] active:scale-[0.98]">
+                Create Your Profile
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+            </Link>
+            <Link href="/chat" legacyBehavior>
+              <a className="btn btn-outline border-moss-green text-moss-green hover:bg-moss-green hover:text-white btn-lg transform transition-all duration-250 hover:scale-[1.02] active:scale-[0.98]">
+                Chat with an Advisor
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

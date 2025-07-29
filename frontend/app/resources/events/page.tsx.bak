@@ -1,0 +1,79 @@
+import React from 'react'
+import Link from 'next/link'
+
+export default function Events() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Webinars & Events</h1>
+          <p className="text-xl text-base-content/70">
+            Connect with industry professionals and expand your network
+          </p>
+        </div>
+        
+        <div className="space-y-6">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="card-title">Breaking into Solar: A Beginner's Guide</h3>
+                  <p className="text-base-content/70">Live webinar with industry experts</p>
+                  <div className="flex gap-4 mt-2">
+                    <span className="badge badge-primary">Live</span>
+                    <span className="text-sm text-base-content/60">Jan 15, 2025 • 2:00 PM EST</span>
+                  </div>
+                </div>
+                <Link href="/auth/signup" legacyBehavior>
+                  <a className="btn btn-primary">Register</a>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="card-title">Clean Energy Networking Night</h3>
+                  <p className="text-base-content/70">Virtual networking event for professionals</p>
+                  <div className="flex gap-4 mt-2">
+                    <span className="badge badge-secondary">Networking</span>
+                    <span className="text-sm text-base-content/60">Jan 22, 2025 • 6:00 PM EST</span>
+                  </div>
+                </div>
+                <Link href="/auth/signup" legacyBehavior>
+                  <a className="btn btn-primary">Register</a>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="card-title">Veterans in Clean Energy Panel</h3>
+                  <p className="text-base-content/70">Panel discussion with veteran clean energy professionals</p>
+                  <div className="flex gap-4 mt-2">
+                    <span className="badge badge-accent">Panel</span>
+                    <span className="text-sm text-base-content/60">Feb 5, 2025 • 1:00 PM EST</span>
+                  </div>
+                </div>
+                <Link href="/auth/signup" legacyBehavior>
+                  <a className="btn btn-primary">Register</a>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mt-12">
+          <Link href="/resources" className="btn btn-outline">
+            Back to Resources
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+} 

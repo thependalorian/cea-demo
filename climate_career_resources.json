@@ -1,0 +1,178 @@
+{
+  "knowledge_resources": [
+    {
+      "title": "Clean Energy Internship Program",
+      "content": "The Massachusetts Clean Energy Internship Program helps prepare the next generation of clean energy workers by funding internships for college students and recent graduates at Massachusetts clean energy and water innovation companies. As an intern, you'll gain valuable experience and have opportunities to network within the clean energy sector.",
+      "url": "https://www.masscec.com/clean-energy-internships-students",
+      "sectors": ["renewable energy", "clean energy", "water innovation"],
+      "career_stages": ["student", "early career", "recent graduate"]
+    },
+    {
+      "title": "Technical Trades Work and Learning Program",
+      "content": "The Technical Trades Work and Learning Program is a unique opportunity that connects students from vocational high schools, After Dark programs, and Career Technical Initiative (CTI) programs with paid, hands-on work experience in the clean energy sector throughout the academic year and into the summer.",
+      "url": "https://www.masscec.com/vocational-internship-program-students",
+      "sectors": ["clean energy", "technical trades", "vocational training"],
+      "career_stages": ["student", "vocational student", "early career"]
+    },
+    {
+      "title": "Clean Energy Pathways Program",
+      "content": "Join the more than two million Americans in the largest sector in the U.S. clean economy. Gain hands-on industry experience by enrolling in the Clean Energy Pathways program to start your career in energy efficiency. The Mass Save Clean Energy Pathways program is a full-time, paid, three-month internship that aims to boost the energy efficiency workforce.",
+      "url": "https://www.masssave.com/trade-partners/clean-energy-pathways",
+      "sectors": ["energy efficiency", "HVAC", "weatherization"],
+      "career_stages": ["early career", "career transition"]
+    },
+    {
+      "title": "Support Internship Program Success (SIPS)",
+      "content": "Support Internship Program Success (SIPS) is a MassCEC workforce development initiative in partnership with Browning the Green Space (BGS). BGS recruits and places college students and clean energy certificate program students who identify as first-generation college students, Pell Grant recipients, residents of Massachusetts Environmental Justice neighborhoods, and disadvantaged communities into clean energy internships.",
+      "url": "https://www.masscec.com/program/clean-energy-internship-program-employers",
+      "sectors": ["clean energy", "environmental justice", "diversity in clean energy"],
+      "career_stages": ["student", "early career"]
+    },
+    {
+      "title": "MassCEC Resume Board",
+      "content": "Cast a wider net and have companies search for you directly! Submit your details into our resume database today and have clean energy employers reach out to you for their open positions.",
+      "url": "https://www.masscec.com/workforce/job-seekers-students",
+      "sectors": ["clean energy", "career development"],
+      "career_stages": ["early career", "mid career", "senior"]
+    },
+    {
+      "title": "Alliance for Climate Transition - Workforce Development",
+      "content": "ACT is committed to workforce development, ensuring the region has the skilled professionals needed to sustain and grow its climate economy. ACT champions diversity, equity, inclusion & justice in the climate workforce.",
+      "url": "https://www.joinact.org/about-us",
+      "sectors": ["climate economy", "workforce development", "diversity in climate"],
+      "career_stages": ["early career", "mid career", "senior", "executive"]
+    },
+    {
+      "title": "Cleantech Open Northeast Program",
+      "content": "Cleantech Open Northeast is a program managed by ACT Institute that fosters a vibrant ecosystem for clean energy startups, nurturing innovation and entrepreneurship to drive the region's cleantech advancements.",
+      "url": "https://www.joinact.org/about-us",
+      "sectors": ["cleantech", "innovation", "entrepreneurship"],
+      "career_stages": ["entrepreneur", "mid career", "senior"]
+    },
+    {
+      "title": "ACT Municipal Leadership Program",
+      "content": "ACT's Municipal Leadership program equips public officials, local governments & climatetech companies with resources to drive innovation and implement climate solutions at the local level.",
+      "url": "https://www.joinact.org/",
+      "sectors": ["municipal climate action", "local government", "policy"],
+      "career_stages": ["mid career", "senior", "executive"]
+    },
+    {
+      "title": "Powering Tomorrow Campaign",
+      "content": "The Powering Tomorrow campaign presents a bold vision for our future, driven by the urgent need to transition to a clean energy grid. Our mission is clear: to harness the power of renewable energy and modernize our infrastructure to create a sustainable and resilient energy system for future generations.",
+      "url": "https://www.joinact.org/",
+      "sectors": ["clean energy grid", "renewable energy", "infrastructure"],
+      "career_stages": ["all levels"]
+    },
+    {
+      "title": "ACT Climate Economy Ecosystem",
+      "content": "ACT advocates for strong ecosystems to scale clean energy sources and empowers workforces to advance the climate economy across the Northeast and Canada. ACT serves as the connective thread that weaves together policy, advocacy, resources, innovation, workforce development, clean transportation, and local government support to create a clean energy future and a diverse climate economy.",
+      "url": "https://www.joinact.org/",
+      "sectors": ["climate economy", "clean energy", "policy", "innovation"],
+      "career_stages": ["all levels"]
+    },
+    {
+      "title": "Global Climate Action Project",
+      "content": "The Global Climate Action Project (GCAP) is your resource centre to become better informed about climate change and equip yourself with the skills and knowledge to help tackle this issue as an individual. So, you can feel confident in your ability to take action, we've researched and summarised key information about climate change and how we can all work together to address the climate crisis.",
+      "url": "https://www.acet-global.com/global-climate-action-project.html",
+      "sectors": ["climate action", "education", "individual action"],
+      "career_stages": ["all levels"]
+    },
+    {
+      "title": "Act Now Bay Area Climate Solutions",
+      "content": "Taking action is easier than you think. This is your one-stop shop to find Bay Area climate solutions that work for you: where you live, where you work, and with your local government. Everyone can do something, and everyone has a part to play - together, the Bay Area can make a world of difference.",
+      "url": "https://www.actnowbayarea.org/",
+      "sectors": ["local climate action", "buildings & energy", "transportation", "food & food waste"],
+      "career_stages": ["all levels"]
+    }
+  ],
+  "resumes": [
+    {
+      "name": "Alex Johnson",
+      "email": "alex.johnson@example.com",
+      "content": "Experienced renewable energy professional with 5 years in solar project development. Skills include project management, financial modeling, and stakeholder engagement. Looking for senior project manager roles in clean energy.",
+      "skills": ["Solar Energy", "Project Management", "Financial Modeling", "Stakeholder Engagement"]
+    },
+    {
+      "name": "Morgan Smith",
+      "email": "morgan.smith@example.com",
+      "content": "Recent environmental science graduate seeking entry-level position in climate policy. Completed internship with state environmental agency analyzing climate adaptation strategies. Strong research and data analysis skills.",
+      "skills": ["Climate Policy", "Environmental Science", "Research", "Data Analysis"]
+    },
+    {
+      "name": "Taylor Williams",
+      "email": "taylor.williams@example.com",
+      "content": "HVAC technician with 3 years experience, recently completed clean energy pathways program. Specialized in energy efficient systems and building retrofits. Seeking opportunities in weatherization and building efficiency.",
+      "skills": ["HVAC", "Energy Efficiency", "Building Retrofits", "Weatherization"]
+    },
+    {
+      "name": "Jordan Lee",
+      "email": "jordan.lee@example.com",
+      "content": "Clean energy entrepreneur with MBA and engineering background. Founded startup focused on community solar solutions. Looking to join established cleantech company in business development role.",
+      "skills": ["Entrepreneurship", "Business Development", "Community Solar", "Clean Energy"]
+    },
+    {
+      "name": "Casey Martinez",
+      "email": "casey.martinez@example.com",
+      "content": "Environmental justice advocate with background in community organizing. Experience working with disadvantaged communities on climate resilience projects. Seeking program manager role in climate equity initiatives.",
+      "skills": ["Environmental Justice", "Community Organizing", "Climate Resilience", "Program Management"]
+    }
+  ],
+  "conversations": [
+    {
+      "title": "Clean Energy Internship Opportunities",
+      "messages": [
+        {"role": "user", "content": "I'm a college student interested in clean energy internships in Massachusetts. What programs are available?"},
+        {"role": "assistant", "content": "The Massachusetts Clean Energy Internship Program is a great option for college students. It offers paid internships at clean energy companies year-round with Spring, Summer, and Fall sessions."},
+        {"role": "user", "content": "What are the eligibility requirements for this program?"}
+      ]
+    },
+    {
+      "title": "Career Transition to Climate Tech",
+      "messages": [
+        {"role": "user", "content": "I'm currently working in software development but want to transition to climate tech. What skills should I focus on?"},
+        {"role": "assistant", "content": "Your software skills are valuable in climate tech! Consider focusing on data analytics, IoT, or energy management systems. Organizations like ACT offer resources for professionals transitioning to the climate economy."},
+        {"role": "user", "content": "Are there any specific training programs you'd recommend for someone with my background?"}
+      ]
+    },
+    {
+      "title": "Vocational Training in Clean Energy",
+      "messages": [
+        {"role": "user", "content": "I'm interested in vocational training for clean energy jobs. What options exist for hands-on training?"},
+        {"role": "assistant", "content": "The Technical Trades Work and Learning Program connects vocational students with paid work experience in clean energy. The Clean Energy Pathways program also offers internships specifically in HVAC and weatherization fields."},
+        {"role": "user", "content": "How long do these programs typically last and what's the application process?"}
+      ]
+    },
+    {
+      "title": "Climate Entrepreneurship Resources",
+      "messages": [
+        {"role": "user", "content": "I have an idea for a climate tech startup. What resources are available for early-stage entrepreneurs?"},
+        {"role": "assistant", "content": "Cleantech Open Northeast, managed by ACT Institute, is a great resource for clean energy startups. They offer mentorship, training, and networking opportunities for entrepreneurs."},
+        {"role": "user", "content": "What kind of support do they provide specifically for early-stage ideas?"}
+      ]
+    },
+    {
+      "title": "Environmental Justice Career Paths",
+      "messages": [
+        {"role": "user", "content": "I'm passionate about environmental justice and want to work in this field. What career paths should I explore?"},
+        {"role": "assistant", "content": "There are several paths including policy advocacy, community organizing, and program management. The Support Internship Program Success (SIPS) by MassCEC and Browning the Green Space focuses on environmental justice communities."},
+        {"role": "user", "content": "Are there specific organizations in Massachusetts that focus on environmental justice work?"}
+      ]
+    }
+  ],
+  "training_messages": [
+    {"role": "system", "content": "You are a climate careers assistant that helps users find internships, jobs, and educational opportunities in the clean energy and climate sectors.", "category": "system"},
+    {"role": "user", "content": "What internship opportunities are available for college students in clean energy?", "category": "internships"},
+    {"role": "assistant", "content": "There are several great internship opportunities for college students in clean energy. The Massachusetts Clean Energy Internship Program offers paid internships year-round with Spring, Summer, and Fall sessions. You'll need to be a Massachusetts resident or attend a college in Massachusetts to be eligible.", "category": "internships"},
+    {"role": "user", "content": "I'm a vocational student interested in HVAC. Are there programs for me?", "category": "vocational"},
+    {"role": "assistant", "content": "Yes, there are specific programs for vocational students! The Technical Trades Work and Learning Program connects students from vocational high schools with paid work experience in clean energy. The Clean Energy Pathways program also offers internships specifically in HVAC and weatherization fields.", "category": "vocational"},
+    {"role": "user", "content": "What organizations support diversity in clean energy careers?", "category": "diversity"},
+    {"role": "assistant", "content": "Several organizations focus on increasing diversity in clean energy. The Support Internship Program Success (SIPS) by MassCEC and Browning the Green Space places students from underrepresented backgrounds into clean energy internships. ACT also champions diversity, equity, inclusion and justice in their workforce development initiatives.", "category": "diversity"},
+    {"role": "user", "content": "How can I transition from software engineering to climate tech?", "category": "career_transition"},
+    {"role": "assistant", "content": "Your software engineering skills are highly valuable in climate tech! Consider focusing on areas like energy management systems, grid optimization, or climate data analytics. Organizations like ACT offer resources for professionals transitioning to the climate economy. The Cleantech Open Northeast program also connects professionals with startups that might need your technical expertise.", "category": "career_transition"},
+    {"role": "user", "content": "What resources exist for climate entrepreneurs?", "category": "entrepreneurship"},
+    {"role": "assistant", "content": "For climate entrepreneurs, Cleantech Open Northeast (managed by ACT Institute) provides mentorship, training, and networking. They foster a vibrant ecosystem for clean energy startups and help drive regional cleantech advancements. ACT's Climate Economy Ecosystem initiative also supports scaling clean energy innovations across the Northeast.", "category": "entrepreneurship"},
+    {"role": "user", "content": "Are there any climate action resources for individuals?", "category": "individual_action"},
+    {"role": "assistant", "content": "Yes! The Global Climate Action Project (GCAP) provides resources to help individuals become better informed about climate change and equip themselves with skills to take action. Act Now Bay Area also offers tools for finding climate solutions that work for individuals where they live and work.", "category": "individual_action"},
+    {"role": "system", "content": "When discussing career opportunities, always highlight both the technical skills needed and the impact these careers have on addressing climate change.", "category": "system"}
+  ]
+} 

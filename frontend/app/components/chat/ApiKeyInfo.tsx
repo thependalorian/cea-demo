@@ -1,0 +1,88 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+
+export default function ApiKeyInfo() {
+  return (
+    <Card className="p-6 bg-spring-green/10 border-spring-green/30">
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-midnight-forest" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-midnight-forest">OpenAI API Key Required for Chat</h3>
+          <div className="mt-1 text-sm text-gray-600 space-y-3">
+            <p>
+              This demo requires your own <strong>OpenAI API key</strong> to access the Climate Economy Assistant's AI chat features.
+            </p>
+            <p>
+              Your API key is stored securely in your browser's local storage and is only sent directly to OpenAI. 
+              It is not stored on our servers or shared with any third parties.
+            </p>
+            
+            {/* Quick Info Section */}
+                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+               <h4 className="font-medium text-blue-800 mb-2">Demo Experience</h4>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li>• Test the AI assistant with your own OpenAI API key</li>
+                <li>• Explore job seeker, partner, and admin dashboards</li>
+                <li>• Browse Massachusetts clean energy resources and jobs</li>
+                <li>• No registration required - full demo access</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="font-medium text-midnight-forest">Where to get an API key:</span>
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      OpenAI API Keys Dashboard
+                    </a>
+                  </li>
+                  <li className="text-xs text-gray-500">Create an account if you don't have one</li>
+                  <li className="text-xs text-gray-500">Generate a new secret key for this demo</li>
+                </ul>
+              </div>
+              
+              <div>
+                <span className="font-medium text-midnight-forest">API key format:</span> 
+                <code className="bg-gray-100 px-2 py-1 rounded text-xs ml-2">sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+              </div>
+              
+              <div>
+                <span className="font-medium text-midnight-forest">Estimated cost:</span>
+                <span className="text-xs text-gray-600 ml-2">Typically $0.01-0.05 per conversation depending on length</span>
+              </div>
+            </div>
+
+            {/* Navigation Help */}
+            <div className="mt-4 pt-3 border-t border-spring-green/20">
+              <p className="text-xs text-gray-500">
+                <strong>Exploring without chat?</strong> You can still browse all other demo features:
+              </p>
+                             <div className="flex flex-wrap gap-2 mt-2">
+                 <Link href="/dashboard" className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">
+                   Job Seeker Demo
+                 </Link>
+                 <Link href="/partner/dashboard" className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                   Partner Demo
+                 </Link>
+                 <Link href="/admin" className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200">
+                   Admin Demo
+                 </Link>
+                 <Link href="/jobs" className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded hover:bg-orange-200">
+                   Browse Jobs
+                 </Link>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+} 

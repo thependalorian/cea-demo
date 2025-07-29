@@ -1,0 +1,901 @@
+/**
+ * PartnerProfileForm
+ * 
+ * Purpose: Partner organization onboarding and profile setup form
+ * Allows clean energy employers to register and configure their company profiles
+ * Location: /app/components/partner/PartnerProfileForm.tsx
+ * Used by: Partner registration, onboarding flows, and profile management
+ * 
+ * Features:
+ * - Multi-step partner registration process
+ * - Massachusetts clean energy sector categorization
+ * - Company verification and compliance setup
+ * - Hiring preferences and team configuration
+ * - ACT brand integration with accessibility focus
+ * 
+ * @example
+ * <PartnerProfileForm onSubmit={handlePartnerRegistration} />
+ */
+
+'use client';
+
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
+// Partner profile interfaces
+interface PartnerProfile {
+  company: {
+    name: string;
+    legalName: string;
+    website: string;
+    ein: string;
+    founded: number;
+    size: 'startup' | 'small' | 'medium' | 'large' | 'enterprise';
+    description: string;
+    mission: string;
+    logo?: string;
+  };
+  contact: {
+    primaryContactName: string;
+    primaryContactTitle: string;
+    email: string;
+    phone: string;
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+  };
+  cleanEnergy: {
+    sectors: string[];
+    specialties: string[];
+    certifications: string[];
+    projects: string[];
+    sustainability: {
+      greenhouseGasReduction: boolean;
+      renewableEnergyUse: number;
+      sustainabilityReport: boolean;
+    };
+  };
+  hiring: {
+    currentOpenings: number;
+    typicalHiringVolume: 'low' | 'medium' | 'high';
+    priorityRoles: string[];
+    workArrangements: string[];
+    benefitsOffered: string[];
+    diversityCommitment: boolean;
+    veteranFriendly: boolean;
+    internshipPrograms: boolean;
+  };
+  massachusetts: {
+    locations: string[];
+    massCleanEnergyMember: boolean;
+    stateIncentivesUsed: string[];
+    communityPartnerships: string[];
+    workforcePartner: boolean;
+  };
+  verification: {
+    businessLicense: boolean;
+    insuranceVerified: boolean;
+    backgroundCheckPolicy: boolean;
+    equalOpportunityEmployer: boolean;
+    agreedToTerms: boolean;
+  };
+}
+
+interface PartnerProfileFormProps {
+  onSubmit: (profile: PartnerProfile) => Promise<void>;
+  onCancel?: () => void;
+  initialData?: Partial<PartnerProfile>;
+  className?: string;
+}
+
+// Massachusetts clean energy sectors
+const cleanEnergySectors = [
+  'Solar Energy',
+  'Offshore Wind',
+  'Onshore Wind',
+  'Energy Storage',
+  'Electric Vehicle Infrastructure',
+  'Grid Modernization',
+  'Energy Efficiency',
+  'Green Building',
+  'Hydroelectric',
+  'Geothermal',
+  'Biomass/Biofuels',
+  'Carbon Capture & Storage',
+  'Energy Management Software',
+  'Environmental Consulting',
+  'Policy & Advocacy'
+];
+
+const companySpecialties = [
+  'Project Development',
+  'Engineering & Design',
+  'Installation & Construction',
+  'Operations & Maintenance',
+  'Manufacturing',
+  'Sales & Marketing',
+  'Finance & Investment',
+  'Research & Development',
+  'Consulting Services',
+  'Policy & Regulatory',
+  'Training & Education',
+  'Technology Integration'
+];
+
+const massachusettsLocations = [
+  'Boston Metro',
+  'Cambridge/Somerville',
+  'Worcester',
+  'Springfield',
+  'Lowell',
+  'New Bedford',
+  'Cape Cod',
+  'Berkshires',
+  'Pioneer Valley',
+  'Merrimack Valley',
+  'North Shore',
+  'South Shore',
+  'Central Massachusetts',
+  'Western Massachusetts'
+];
+
+const priorityRoles = [
+  'Solar Installation Technician',
+  'Wind Energy Technician',
+  'Renewable Energy Engineer',
+  'Project Manager',
+  'Sales Representative',
+  'Energy Efficiency Specialist',
+  'Grid Modernization Engineer',
+  'Environmental Compliance Specialist',
+  'Energy Storage Technician',
+  'EV Infrastructure Specialist',
+  'Sustainability Coordinator',
+  'Carbon Analyst',
+  'Business Development Manager',
+  'Operations Manager',
+  'Policy Analyst'
+];
+
+const workArrangements = [
+  'Full-time On-site',
+  'Full-time Remote',
+  'Full-time Hybrid',
+  'Part-time',
+  'Contract/Temporary',
+  'Internships',
+  'Apprenticeships',
+  'Seasonal Work',
+  'Flexible Scheduling'
+];
+
+const benefitsOffered = [
+  'Health Insurance',
+  'Dental Insurance',
+  'Vision Insurance',
+  '401(k) with Match',
+  'Paid Time Off',
+  'Professional Development',
+  'Training & Certifications',
+  'Transportation Allowance',
+  'Flexible Work Hours',
+  'Student Loan Assistance',
+  'Parental Leave',
+  'Mental Health Support'
+];
+
+const defaultProfile: PartnerProfile = {
+  company: {
+    name: '',
+    legalName: '',
+    website: '',
+    ein: '',
+    founded: new Date().getFullYear(),
+    size: 'small',
+    description: '',
+    mission: ''
+  },
+  contact: {
+    primaryContactName: '',
+    primaryContactTitle: '',
+    email: '',
+    phone: '',
+    address: {
+      street: '',
+      city: '',
+      state: 'MA',
+      zipCode: ''
+    }
+  },
+  cleanEnergy: {
+    sectors: [],
+    specialties: [],
+    certifications: [],
+    projects: [],
+    sustainability: {
+      greenhouseGasReduction: false,
+      renewableEnergyUse: 0,
+      sustainabilityReport: false
+    }
+  },
+  hiring: {
+    currentOpenings: 0,
+    typicalHiringVolume: 'medium',
+    priorityRoles: [],
+    workArrangements: [],
+    benefitsOffered: [],
+    diversityCommitment: false,
+    veteranFriendly: false,
+    internshipPrograms: false
+  },
+  massachusetts: {
+    locations: [],
+    massCleanEnergyMember: false,
+    stateIncentivesUsed: [],
+    communityPartnerships: [],
+    workforcePartner: false
+  },
+  verification: {
+    businessLicense: false,
+    insuranceVerified: false,
+    backgroundCheckPolicy: false,
+    equalOpportunityEmployer: false,
+    agreedToTerms: false
+  }
+};
+
+const PartnerProfileForm: React.FC<PartnerProfileFormProps> = ({
+  onSubmit,
+  onCancel,
+  initialData = {},
+  className
+}) => {
+  const [profile, setProfile] = useState<PartnerProfile>({
+    ...defaultProfile,
+    ...initialData
+  });
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const totalSteps = 6;
+
+  const updateProfile = (path: string, value: unknown) => {
+    setProfile(prev => {
+      const newProfile = { ...prev };
+      const keys = path.split('.');
+      let current: unknown = newProfile;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      
+      current[keys[keys.length - 1]] = value;
+      return newProfile;
+    });
+  };
+
+  const toggleArrayValue = (path: string, value: string) => {
+    const current = getNestedValue(profile, path) as string[];
+    const updated = current.includes(value)
+      ? current.filter(item => item !== value)
+      : [...current, value];
+    updateProfile(path, updated);
+  };
+
+  const getNestedValue = (obj: unknown, path: string) => {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+  };
+
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    switch (step) {
+      case 1: // Company Information
+        if (!profile.company.name) newErrors['company.name'] = 'Company name is required';
+        if (!profile.company.website) newErrors['company.website'] = 'Website is required';
+        if (!profile.company.description) newErrors['company.description'] = 'Description is required';
+        break;
+      
+      case 2: // Contact Information
+        if (!profile.contact.primaryContactName) newErrors['contact.primaryContactName'] = 'Contact name is required';
+        if (!profile.contact.email) newErrors['contact.email'] = 'Email is required';
+        if (!profile.contact.address.city) newErrors['contact.address.city'] = 'City is required';
+        break;
+      
+      case 3: // Clean Energy Profile
+        if (profile.cleanEnergy.sectors.length === 0) newErrors['cleanEnergy.sectors'] = 'Select at least one sector';
+        break;
+      
+      case 6: // Verification
+        if (!profile.verification.agreedToTerms) newErrors['verification.agreedToTerms'] = 'Must agree to terms';
+        break;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(currentStep)) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(profile);
+    } catch (error) {
+      console.error('Submission failed:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderCheckboxGroup = (
+    title: string,
+    options: string[],
+    selectedValues: string[],
+    path: string
+  ) => (
+    <div className="space-y-3">
+      <h4 className="font-medium text-midnight-forest">{title}</h4>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {options.map((option) => (
+          <label key={option} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={selectedValues.includes(option)}
+              onChange={() => toggleArrayValue(path, option)}
+              className="w-4 h-4 text-spring-green border-gray-300 rounded focus:ring-spring-green"
+            />
+            <span className="text-sm text-gray-700">{option}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderToggle = (label: string, checked: boolean, path: string) => (
+    <div className="flex items-center justify-between p-3 border rounded-lg">
+      <span className="font-medium text-midnight-forest">{label}</span>
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => updateProfile(path, e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-spring-green/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-spring-green"></div>
+      </label>
+    </div>
+  );
+
+  const steps = [
+    { id: 1, title: 'Company Information', icon: '🏢' },
+    { id: 2, title: 'Contact Details', icon: '📧' },
+    { id: 3, title: 'Clean Energy Profile', icon: '🌱' },
+    { id: 4, title: 'Hiring Preferences', icon: '👥' },
+    { id: 5, title: 'Massachusetts Details', icon: '' },
+    { id: 6, title: 'Verification', icon: '' }
+  ];
+
+  return (
+    <div className={cn("w-full max-w-4xl mx-auto space-y-6", className)}>
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="p-3 bg-spring-green/10 rounded-full">
+            <span className="text-2xl">🤝</span>
+          </div>
+          <h2 className="text-3xl font-bold text-midnight-forest">
+            Partner Registration
+          </h2>
+        </div>
+        <p className="text-lg text-moss-green">
+          Join Massachusetts&apos; clean energy employer network
+        </p>
+      </div>
+
+      {/* Progress Indicator */}
+      <div className="flex justify-center">
+        <div className="flex items-center space-x-4">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center">
+              <div className={cn(
+                "flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors",
+                currentStep >= step.id
+                  ? "bg-spring-green border-spring-green text-midnight-forest"
+                  : "bg-gray-100 border-gray-300 text-gray-500"
+              )}>
+                <span className="text-lg">{step.icon}</span>
+              </div>
+              <div className="ml-3 text-sm">
+                <div className={cn(
+                  "font-medium",
+                  currentStep >= step.id ? "text-midnight-forest" : "text-gray-500"
+                )}>
+                  {step.title}
+                </div>
+              </div>
+              {index < steps.length - 1 && (
+                <div className={cn(
+                  "mx-4 h-px w-12 transition-colors",
+                  currentStep > step.id ? "bg-spring-green" : "bg-gray-300"
+                )} />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Form Content */}
+      <Card className="p-8">
+        {/* Step 1: Company Information */}
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Company Information
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Company Name *
+                </label>
+                <Input
+                  value={profile.company.name}
+                  onChange={(e) => updateProfile('company.name', e.target.value)}
+                  placeholder="Massachusetts Solar Solutions"
+                  className={errors['company.name'] ? 'border-red-500' : ''}
+                />
+                {errors['company.name'] && (
+                  <p className="text-red-500 text-xs mt-1">{errors['company.name']}</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Website *
+                </label>
+                <Input
+                  value={profile.company.website}
+                  onChange={(e) => updateProfile('company.website', e.target.value)}
+                  placeholder="https://www.company.com"
+                  className={errors['company.website'] ? 'border-red-500' : ''}
+                />
+                {errors['company.website'] && (
+                  <p className="text-red-500 text-xs mt-1">{errors['company.website']}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Company Size
+                </label>
+                <select
+                  value={profile.company.size}
+                  onChange={(e) => updateProfile('company.size', e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-spring-green focus:border-spring-green"
+                >
+                  <option value="startup">Startup (1-10 employees)</option>
+                  <option value="small">Small (11-50 employees)</option>
+                  <option value="medium">Medium (51-200 employees)</option>
+                  <option value="large">Large (201-1000 employees)</option>
+                  <option value="enterprise">Enterprise (1000+ employees)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Founded Year
+                </label>
+                <Input
+                  type="number"
+                  value={profile.company.founded}
+                  onChange={(e) => updateProfile('company.founded', parseInt(e.target.value))}
+                  placeholder="2020"
+                  min="1900"
+                  max={new Date().getFullYear()}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Description *
+              </label>
+              <textarea
+                value={profile.company.description}
+                onChange={(e) => updateProfile('company.description', e.target.value)}
+                className={cn(
+                  "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-spring-green focus:border-spring-green",
+                  errors['company.description'] ? 'border-red-500' : ''
+                )}
+                rows={4}
+                placeholder="Describe your company's focus in the clean energy sector..."
+              />
+              {errors['company.description'] && (
+                <p className="text-red-500 text-xs mt-1">{errors['company.description']}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mission Statement
+              </label>
+              <textarea
+                value={profile.company.mission}
+                onChange={(e) => updateProfile('company.mission', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-spring-green focus:border-spring-green"
+                rows={3}
+                placeholder="Your company's mission in advancing clean energy..."
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Contact Information */}
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Contact Information
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Primary Contact Name *
+                </label>
+                <Input
+                  value={profile.contact.primaryContactName}
+                  onChange={(e) => updateProfile('contact.primaryContactName', e.target.value)}
+                  placeholder="Jane Smith"
+                  className={errors['contact.primaryContactName'] ? 'border-red-500' : ''}
+                />
+                {errors['contact.primaryContactName'] && (
+                  <p className="text-red-500 text-xs mt-1">{errors['contact.primaryContactName']}</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title
+                </label>
+                <Input
+                  value={profile.contact.primaryContactTitle}
+                  onChange={(e) => updateProfile('contact.primaryContactTitle', e.target.value)}
+                  placeholder="HR Director"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address *
+                </label>
+                <Input
+                  type="email"
+                  value={profile.contact.email}
+                  onChange={(e) => updateProfile('contact.email', e.target.value)}
+                  placeholder="contact@company.com"
+                  className={errors['contact.email'] ? 'border-red-500' : ''}
+                />
+                {errors['contact.email'] && (
+                  <p className="text-red-500 text-xs mt-1">{errors['contact.email']}</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <Input
+                  type="tel"
+                  value={profile.contact.phone}
+                  onChange={(e) => updateProfile('contact.phone', e.target.value)}
+                  placeholder="(617) 555-0123"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-midnight-forest mb-4">Company Address</h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Street Address
+                  </label>
+                  <Input
+                    value={profile.contact.address.street}
+                    onChange={(e) => updateProfile('contact.address.street', e.target.value)}
+                    placeholder="123 Innovation Way"
+                  />
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City *
+                    </label>
+                    <Input
+                      value={profile.contact.address.city}
+                      onChange={(e) => updateProfile('contact.address.city', e.target.value)}
+                      placeholder="Boston"
+                      className={errors['contact.address.city'] ? 'border-red-500' : ''}
+                    />
+                    {errors['contact.address.city'] && (
+                      <p className="text-red-500 text-xs mt-1">{errors['contact.address.city']}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      State
+                    </label>
+                    <Input
+                      value={profile.contact.address.state}
+                      onChange={(e) => updateProfile('contact.address.state', e.target.value)}
+                      placeholder="MA"
+                      disabled
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      ZIP Code
+                    </label>
+                    <Input
+                      value={profile.contact.address.zipCode}
+                      onChange={(e) => updateProfile('contact.address.zipCode', e.target.value)}
+                      placeholder="02101"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Clean Energy Profile */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Clean Energy Profile
+            </h3>
+
+            <div className={errors['cleanEnergy.sectors'] ? 'border border-red-500 rounded-lg p-4' : ''}>
+              {renderCheckboxGroup(
+                'Clean Energy Sectors *',
+                cleanEnergySectors,
+                profile.cleanEnergy.sectors,
+                'cleanEnergy.sectors'
+              )}
+              {errors['cleanEnergy.sectors'] && (
+                <p className="text-red-500 text-xs mt-2">{errors['cleanEnergy.sectors']}</p>
+              )}
+            </div>
+
+            {renderCheckboxGroup(
+              'Company Specialties',
+              companySpecialties,
+              profile.cleanEnergy.specialties,
+              'cleanEnergy.specialties'
+            )}
+
+            <div>
+              <h4 className="font-medium text-midnight-forest mb-4">Sustainability Commitments</h4>
+              <div className="space-y-4">
+                {renderToggle('Committed to greenhouse gas reduction', profile.cleanEnergy.sustainability.greenhouseGasReduction, 'cleanEnergy.sustainability.greenhouseGasReduction')}
+                {renderToggle('Publishes annual sustainability report', profile.cleanEnergy.sustainability.sustainabilityReport, 'cleanEnergy.sustainability.sustainabilityReport')}
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Renewable Energy Use (%)
+                  </label>
+                  <Input
+                    type="number"
+                    value={profile.cleanEnergy.sustainability.renewableEnergyUse}
+                    onChange={(e) => updateProfile('cleanEnergy.sustainability.renewableEnergyUse', parseInt(e.target.value))}
+                    placeholder="25"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Hiring Preferences */}
+        {currentStep === 4 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Hiring Preferences
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Open Positions
+                </label>
+                <Input
+                  type="number"
+                  value={profile.hiring.currentOpenings}
+                  onChange={(e) => updateProfile('hiring.currentOpenings', parseInt(e.target.value))}
+                  placeholder="5"
+                  min="0"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Typical Hiring Volume
+                </label>
+                <select
+                  value={profile.hiring.typicalHiringVolume}
+                  onChange={(e) => updateProfile('hiring.typicalHiringVolume', e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-spring-green focus:border-spring-green"
+                >
+                  <option value="low">Low (1-5 per year)</option>
+                  <option value="medium">Medium (6-20 per year)</option>
+                  <option value="high">High (20+ per year)</option>
+                </select>
+              </div>
+            </div>
+
+            {renderCheckboxGroup(
+              'Priority Roles for Hiring',
+              priorityRoles,
+              profile.hiring.priorityRoles,
+              'hiring.priorityRoles'
+            )}
+
+            {renderCheckboxGroup(
+              'Work Arrangements Offered',
+              workArrangements,
+              profile.hiring.workArrangements,
+              'hiring.workArrangements'
+            )}
+
+            {renderCheckboxGroup(
+              'Benefits Package',
+              benefitsOffered,
+              profile.hiring.benefitsOffered,
+              'hiring.benefitsOffered'
+            )}
+
+            <div className="space-y-4">
+              <h4 className="font-medium text-midnight-forest">Diversity & Inclusion</h4>
+              {renderToggle('Committed to diversity and inclusion', profile.hiring.diversityCommitment, 'hiring.diversityCommitment')}
+              {renderToggle('Veteran-friendly employer', profile.hiring.veteranFriendly, 'hiring.veteranFriendly')}
+              {renderToggle('Offers internship programs', profile.hiring.internshipPrograms, 'hiring.internshipPrograms')}
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Massachusetts Details */}
+        {currentStep === 5 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Massachusetts Presence
+            </h3>
+
+            {renderCheckboxGroup(
+              'Massachusetts Locations',
+              massachusettsLocations,
+              profile.massachusetts.locations,
+              'massachusetts.locations'
+            )}
+
+            <div className="space-y-4">
+              <h4 className="font-medium text-midnight-forest">State Partnerships & Programs</h4>
+              {renderToggle('Massachusetts Clean Energy Center member', profile.massachusetts.massCleanEnergyMember, 'massachusetts.massCleanEnergyMember')}
+              {renderToggle('Workforce development partner', profile.massachusetts.workforcePartner, 'massachusetts.workforcePartner')}
+            </div>
+          </div>
+        )}
+
+        {/* Step 6: Verification */}
+        {currentStep === 6 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-midnight-forest mb-4">
+              Verification & Compliance
+            </h3>
+
+            <div className="space-y-4">
+              {renderToggle('Valid Massachusetts business license', profile.verification.businessLicense, 'verification.businessLicense')}
+              {renderToggle('General liability insurance verified', profile.verification.insuranceVerified, 'verification.insuranceVerified')}
+              {renderToggle('Background check policy in place', profile.verification.backgroundCheckPolicy, 'verification.backgroundCheckPolicy')}
+              {renderToggle('Equal opportunity employer', profile.verification.equalOpportunityEmployer, 'verification.equalOpportunityEmployer')}
+              
+              <div className={errors['verification.agreedToTerms'] ? 'border border-red-500 rounded-lg p-4' : 'border border-gray-200 rounded-lg p-4'}>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={profile.verification.agreedToTerms}
+                    onChange={(e) => updateProfile('verification.agreedToTerms', e.target.checked)}
+                    className="w-4 h-4 text-spring-green border-gray-300 rounded focus:ring-spring-green mt-1"
+                  />
+                  <div>
+                    <span className="font-medium text-midnight-forest">
+                      I agree to the Terms of Service and Privacy Policy *
+                    </span>
+                    <p className="text-sm text-gray-600 mt-1">
+                      By checking this box, you confirm that you have read and agree to our terms and conditions.
+                    </p>
+                  </div>
+                </label>
+                {errors['verification.agreedToTerms'] && (
+                  <p className="text-red-500 text-xs mt-2">{errors['verification.agreedToTerms']}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between pt-6 border-t">
+          <div>
+            {currentStep > 1 && (
+              <Button
+                onClick={handlePrevious}
+                variant="outline"
+                className="border-moss-green text-moss-green hover:bg-moss-green hover:text-white"
+              >
+                Previous
+              </Button>
+            )}
+          </div>
+          
+          <div className="flex gap-3">
+            {onCancel && (
+              <Button
+                onClick={onCancel}
+                variant="ghost"
+                className="text-gray-600 hover:text-midnight-forest"
+              >
+                Cancel
+              </Button>
+            )}
+            
+            {currentStep < totalSteps ? (
+              <Button
+                onClick={handleNext}
+                className="bg-spring-green text-midnight-forest hover:bg-spring-green/90"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-spring-green text-midnight-forest hover:bg-spring-green/90"
+              >
+                {isSubmitting ? 'Submitting...' : 'Complete Registration'}
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default PartnerProfileForm; 

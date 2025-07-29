@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from "next/server";
+
+// Note: climate_teams functionality has been disabled for now
+// This API route is placeholder functionality for future LangGraph integration
+const checkpointer = null;
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const conversationId = params.id;
+    
+    if (!conversationId) {
+      return NextResponse.json(
+        { error: "Conversation ID is required" },
+        { status: 400 }
+      );
+    }
+    
+    // Check if Redis checkpointer is available
+    if (!checkpointer) {
+      return NextResponse.json(
+        { error: "Redis persistence is not available" },
+        { status: 503 }
+      );
+    }
+    
+    // For now, return a placeholder response since climate_teams is disabled
+    return NextResponse.json({
+      messages: [],
+      conversation_id: conversationId,
+      status: "placeholder"
+    });
+    
+  } catch (error) {
+    console.error("Error in conversations API:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+} 

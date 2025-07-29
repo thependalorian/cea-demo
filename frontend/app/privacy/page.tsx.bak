@@ -1,0 +1,94 @@
+import React from 'react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - Climate Economy Assistant',
+  description: 'Learn how CEA protects your privacy and handles your personal information.',
+  keywords: 'privacy policy, data protection, GDPR compliance'
+}
+
+export default function Privacy() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      <div className="max-w-4xl mx-auto px-4 py-20">
+        <div className="prose prose-lg max-w-none">
+          <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+          <p className="text-base-content/70 mb-8">
+            <strong>Last updated:</strong> July 8, 2025
+          </p>
+
+          <div className="bg-base-100 rounded-lg p-6 shadow-xl">
+            <h2 className="text-2xl font-bold mb-4">Information We Collect</h2>
+            <p className="text-base-content/70 mb-4">
+              We collect information you provide directly to us, such as when you create an account, 
+              upload your resume, or communicate with our support team.
+            </p>
+            
+            <h3 className="text-xl font-bold mb-2">Personal Information</h3>
+            <ul className="list-disc list-inside text-base-content/70 mb-4">
+              <li>Name and contact information</li>
+              <li>Professional background and skills</li>
+              <li>Resume and career preferences</li>
+              <li>Communication preferences</li>
+            </ul>
+
+            <h3 className="text-xl font-bold mb-2">Usage Information</h3>
+            <ul className="list-disc list-inside text-base-content/70 mb-4">
+              <li>How you interact with our platform</li>
+              <li>Chat conversations with our AI assistant</li>
+              <li>Job search and application activity</li>
+              <li>Device and browser information</li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-lg p-6 shadow-xl mt-8">
+            <h2 className="text-2xl font-bold mb-4">How We Use Your Information</h2>
+            <ul className="list-disc list-inside text-base-content/70">
+              <li>Provide personalized career guidance and job matching</li>
+              <li>Improve our AI algorithms and platform features</li>
+              <li>Communicate with you about your account and our services</li>
+              <li>Ensure platform security and prevent fraud</li>
+              <li>Comply with legal obligations</li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-lg p-6 shadow-xl mt-8">
+            <h2 className="text-2xl font-bold mb-4">Information Sharing</h2>
+            <p className="text-base-content/70 mb-4">
+              We do not sell your personal information. We may share your information in the following circumstances:
+            </p>
+            <ul className="list-disc list-inside text-base-content/70">
+              <li>With your consent (e.g., when applying to jobs through our platform)</li>
+              <li>With service providers who help us operate our platform</li>
+              <li>To comply with legal requirements</li>
+              <li>To protect our rights and the safety of our users</li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-lg p-6 shadow-xl mt-8">
+            <h2 className="text-2xl font-bold mb-4">Your Rights</h2>
+            <p className="text-base-content/70 mb-4">
+              You have the right to:
+            </p>
+            <ul className="list-disc list-inside text-base-content/70">
+              <li>Access and update your personal information</li>
+              <li>Delete your account and associated data</li>
+              <li>Opt out of marketing communications</li>
+              <li>Request a copy of your data</li>
+              <li>Object to certain processing activities</li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-lg p-6 shadow-xl mt-8">
+            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
+            <p className="text-base-content/70">
+              If you have questions about this Privacy Policy, please contact us at:
+              <br />
+              <strong>Email:</strong> george@buffr.ai
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+} 

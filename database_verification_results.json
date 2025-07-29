@@ -1,0 +1,13 @@
+{
+  "timestamp": "121282.514133041",
+  "status": "READY",
+  "score": 195.0,
+  "details": {
+    "tables_verified": 47,
+    "vector_functions": 1,
+    "embeddings_working": true,
+    "climate_data_checks": 4,
+    "auth_checks": 4,
+    "workflow_success": true
+  }
+}

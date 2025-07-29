@@ -1,0 +1,10 @@
+import dynamic from 'next/dynamic';
+
+const BookingForm = dynamic(() => import('@/components/BookingForm'), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-96 text-base text-gray-400">Loading booking form...</div>
+});
+
+export default function BookingPage() {
+  return <BookingForm />;
+} 

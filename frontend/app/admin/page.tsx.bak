@@ -1,0 +1,165 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase'
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Section } from '@/components/ui/section';
+import { Container } from '@/components/ui/container';
+
+const AdminDashboardPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        setError(userError.message);
+      } else if (user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('consolidated_profiles')
+          .select('full_name')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) {
+          setError(profileError.message);
+        } else if (profileData) {
+          setFullName(profileData.full_name || '');
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return <div>Loading dashboard...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>;
+  }
+
+  return (
+    <Section className="py-8">
+      <Container>
+        <h1 className="text-3xl font-bold mb-6">Welcome, {fullName || 'Admin'}!</h1>
+
+        {/* Demo Navigation Helper */}
+        <div className="mb-8 card bg-gradient-to-r from-purple-50 to-pink-50 shadow-sm border border-purple-200">
+          <div className="card-body p-4">
+                       <h3 className="card-title text-lg flex items-center">
+             Demo Mode - Administrator Dashboard
+           </h3>
+            <p className="text-sm text-gray-600 mb-3">
+              You&apos;re viewing the <strong>Admin Dashboard</strong> - explore platform administration features. Try other user perspectives:
+            </p>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+               <Link href="/dashboard" className="btn btn-outline btn-sm">
+                 Job Seeker Dashboard - Career guidance and job discovery experience
+               </Link>
+               <Link href="/partner/dashboard" className="btn btn-outline btn-sm">
+                 Partner Dashboard - Employer hiring and talent management tools
+               </Link>
+             </div>
+            <div className="mt-3 pt-3 border-t border-purple-200">
+                             <p className="text-xs text-gray-500">
+                 <strong>Admin Features:</strong> Manage users, moderate content, track analytics, and configure platform resources. 
+                 Access the <Link href="/chat" className="text-blue-600 hover:underline">AI Assistant</Link> with your OpenAI API key.
+               </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* User Management Section */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">User Management</h2>
+            <p>Manage user accounts and roles.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/users" legacyBehavior>
+                <Button>Manage Users</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+
+        {/* Content Moderation Section */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Content Moderation</h2>
+            <p>Review and moderate flagged content.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/content" legacyBehavior>
+                <Button>Moderate Content</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+
+        {/* Resource Management Section - NEW */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Resource Management</h2>
+            <p>Manage knowledge resources, job listings, and programs.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/resources" legacyBehavior>
+                <Button>Manage Resources</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+
+        {/* System Health Section */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">System Health</h2>
+            <p>Monitor system performance and logs.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/health" legacyBehavior>
+                <Button>View Health</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+
+        {/* Analytics Section */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Analytics</h2>
+            <p>Access site usage and conversation statistics.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/analytics" legacyBehavior>
+                <Button>View Analytics</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+        
+        {/* Resume Analysis Section */}
+        <Card className="bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Resume Analysis</h2>
+            <p>View and analyze uploaded user resumes.</p>
+            <div className="card-actions justify-end">
+              <Link href="/admin/resumes" legacyBehavior>
+                <Button>View Resumes</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+        </div>
+      </Container>
+    </Section>
+  );
+};
+
+export default AdminDashboardPage;

@@ -1,0 +1,133 @@
+// Next.js API route for job search tool
+// Location: app/api/tools/job-search/route.ts
+// Proxies to backend job search tool for AI agents
+// High Priority Fix: Missing tool routes (Backend only -> Need frontend)
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabase as createServerClient } from '@/lib/supabase-server'
+import { 
+  createSuccessResponse, 
+  createErrorResponse, 
+  handleApiError 
+} from '@/lib/api-response'
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000'
+
+// POST /api/tools/job-search - AI-powered job search tool
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = createServerClient()
+    
+    // Authentication check
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createErrorResponse('Authentication required', 401),
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+
+    // Get user profile for context-aware search
+    const { data: userProfile } = await supabase
+      .from('consolidated_profiles')
+      .select(`
+        climate_interests,
+        preferred_locations,
+        skills,
+        experience_level,
+        desired_roles,
+        remote_work_preference
+      `)
+      .eq('id', session.user.id)
+      .single()
+
+    // Enhanced search payload with user context
+    const searchPayload = {
+      ...body,
+      user_id: session.user.id,
+      user_context: userProfile,
+      tool_name: 'job-search',
+      timestamp: new Date().toISOString()
+    }
+
+    // Proxy to backend job search tool
+    const response = await fetch(`${BACKEND_API_URL}/api/v1/tools/job-search`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'CEA-Frontend/1.0'
+      },
+      body: JSON.stringify(searchPayload)
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Backend tool service unavailable' }))
+      return NextResponse.json(
+        createErrorResponse(errorData.error || 'Job search tool failed', 500),
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    
+    return NextResponse.json(
+      createSuccessResponse(data, 'Job search tool executed successfully')
+    )
+
+  } catch (error) {
+    console.error('Job search tool error:', error)
+    return handleApiError(error)
+  }
+}
+
+// GET /api/tools/job-search - Get job search tool information
+export async function GET() {
+  try {
+    const supabase = createServerClient()
+    
+    // Authentication check
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createErrorResponse('Authentication required', 401),
+        { status: 401 }
+      )
+    }
+
+    // Get tool information from backend
+    const response = await fetch(`${BACKEND_API_URL}/api/v1/tools/job-search`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'CEA-Frontend/1.0'
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Backend tool service unavailable' }))
+      return NextResponse.json(
+        createErrorResponse(errorData.error || 'Failed to get job search tool info', 500),
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    
+    return NextResponse.json(
+      createSuccessResponse(data, 'Job search tool information retrieved successfully')
+    )
+
+  } catch (error) {
+    console.error('Job search tool info error:', error)
+    return handleApiError(error)
+  }
+}

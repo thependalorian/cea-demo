@@ -1,0 +1,60 @@
+"use client";
+// admin/app/profile/page.tsx
+// Admin Profile Page
+// Purpose: Show admin info and settings. Located at /profile
+
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { Section } from "@/components/ui/section";
+import { Container } from "@/components/ui/container";
+import { Card } from "@/components/ui/card";
+
+const ADMIN_EMAIL = "george@buffr.ai"; // Replace with dynamic value if you have auth context
+
+export default function AdminProfile() {
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from("admin_profiles")
+        .select("*")
+        .eq("email", ADMIN_EMAIL)
+        .single();
+      if (error) setError(error.message);
+      setProfile(data);
+      setLoading(false);
+    }
+    fetchProfile();
+  }, []);
+
+  return (
+    <Section className="py-8">
+      <Container className="max-w-xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4">Admin Profile</h1>
+        {loading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div className="text-error">{error}</div>
+        ) : profile ? (
+          <Card className="bg-base-200 rounded-xl p-6 shadow mb-6">
+            <h2 className="text-xl font-semibold mb-2">Name</h2>
+            <p className="text-lg">{profile.full_name}</p>
+            <h2 className="text-xl font-semibold mt-4 mb-2">Email</h2>
+            <p className="text-lg">{profile.email}</p>
+          </Card>
+        ) : (
+          <div>No profile found.</div>
+        )}
+        <Card className="bg-base-200 rounded-xl p-6 shadow">
+          <h2 className="text-xl font-semibold mb-2">Settings</h2>
+          <p className="text-base">Settings and preferences coming soon...</p>
+        </Card>
+      </Container>
+    </Section>
+  );
+}

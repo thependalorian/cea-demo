@@ -1,0 +1,128 @@
+services:
+  # AI Agent API Service
+  agent-api:
+    build: ./backend_agent_api
+    container_name: pendo-agent-api
+    restart: always
+    ports:
+      - "8001:8001"
+    environment:
+      # LLM Configuration (Primary: OpenAI)
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://api.openai.com/v1}
+      - LLM_API_KEY=${LLM_API_KEY:-YOUR_OPENAI_API_KEY_HERE}
+      - LLM_CHOICE=${LLM_CHOICE:-gpt-4o-mini}
+      - VISION_LLM_CHOICE=${VISION_LLM_CHOICE:-gpt-4o-mini}
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-YOUR_OPENAI_API_KEY_HERE}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - OPENAI_MODEL_CHOICE=${OPENAI_MODEL_CHOICE:-gpt-4o-mini}
+      # Embedding Configuration
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-openai}
+      - EMBEDDING_BASE_URL=${EMBEDDING_BASE_URL:-https://api.openai.com/v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-YOUR_OPENAI_API_KEY_HERE}
+      - EMBEDDING_MODEL_CHOICE=${EMBEDDING_MODEL_CHOICE:-text-embedding-3-small}
+      # Database Configuration
+      - DATABASE_URL=${DATABASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      # Web Search Configuration
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+      # Agent Observability Configuration (optional)
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST:-https://cloud.langfuse.com}
+      # Rate Limiting Configuration
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - RATE_LIMIT_BURST=${RATE_LIMIT_BURST:-10}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pendo-network
+
+  # RAG Pipeline API Service (NEW)
+  rag-pipeline-api:
+    build: ./rag_pipeline
+    container_name: pendo-rag-pipeline-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      # Database Configuration
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      # Embedding Configuration (OpenAI)
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-openai}
+      - EMBEDDING_BASE_URL=${EMBEDDING_BASE_URL:-https://api.openai.com/v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-YOUR_OPENAI_API_KEY_HERE}
+      - EMBEDDING_MODEL_CHOICE=${EMBEDDING_MODEL_CHOICE:-text-embedding-3-small}
+      # RAG Pipeline Configuration
+      - RAG_PIPELINE_WORKERS=${RAG_PIPELINE_WORKERS:-2}
+      - RAG_PIPELINE_MAX_FILE_SIZE=${RAG_PIPELINE_MAX_FILE_SIZE:-10485760}
+      - RAG_PIPELINE_CHUNK_SIZE=${RAG_PIPELINE_CHUNK_SIZE:-400}
+      - RAG_PIPELINE_CHUNK_OVERLAP=${RAG_PIPELINE_CHUNK_OVERLAP:-50}
+      # Rate Limiting Configuration
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - RATE_LIMIT_BURST=${RATE_LIMIT_BURST:-10}
+    volumes:
+      # Mount for temporary file processing
+      - rag-temp-files:/app/temp
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pendo-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_AGENT_ENDPOINT: ${NEXT_PUBLIC_AGENT_ENDPOINT:-http://agent-api:8001/api/pendo-agent}
+        NEXT_PUBLIC_RAG_PIPELINE_ENDPOINT: ${NEXT_PUBLIC_RAG_PIPELINE_ENDPOINT:-http://rag-pipeline-api:8000}
+        NEXT_PUBLIC_ENABLE_STREAMING: ${NEXT_PUBLIC_ENABLE_STREAMING:-true}
+        BACKEND_API_URL: ${BACKEND_API_URL:-http://rag-pipeline-api:8000}
+    container_name: pendo-frontend
+    restart: always
+    ports:
+      - "8082:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_AGENT_ENDPOINT=${NEXT_PUBLIC_AGENT_ENDPOINT:-http://agent-api:8001/api/pendo-agent}
+      - NEXT_PUBLIC_RAG_PIPELINE_ENDPOINT=${NEXT_PUBLIC_RAG_PIPELINE_ENDPOINT:-http://rag-pipeline-api:8000}
+      - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING:-true}
+      - BACKEND_API_URL=${BACKEND_API_URL:-http://rag-pipeline-api:8000}
+      - AGENT_API_URL=${AGENT_API_URL:-http://agent-api:8001/api/pendo-agent}
+      - RAG_API_URL=${RAG_API_URL:-http://rag-pipeline-api:8000/resume/upload}
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - agent-api
+      - rag-pipeline-api
+    networks:
+      - pendo-network
+
+networks:
+  pendo-network:
+    driver: bridge
+
+volumes:
+  rag-temp-files: 

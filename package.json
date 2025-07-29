@@ -1,0 +1,33 @@
+{
+  "name": "climate-economy-assistant",
+  "version": "1.0.0",
+  "description": "Alliance for Climate Transition - Massachusetts Clean Energy Career Platform",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run start",
+    "docker:build": "./build-frontend.sh --build-only",
+    "docker:run": "./build-frontend.sh",
+    "docker:build-all": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "keywords": [
+    "climate",
+    "clean energy",
+    "massachusetts",
+    "careers",
+    "AI assistant",
+    "workforce development",
+    "alliance for climate transition",
+    "ACT"
+  ],
+  "author": "Alliance for Climate Transition",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+} 

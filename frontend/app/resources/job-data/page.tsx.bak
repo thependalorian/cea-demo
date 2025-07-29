@@ -1,0 +1,68 @@
+import React from 'react'
+import Link from 'next/link'
+
+export default function JobData() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Job Market Data</h1>
+          <p className="text-xl text-base-content/70">
+            Real-time insights into clean energy job market trends
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="stat bg-base-100 shadow-xl rounded-lg">
+            <div className="stat-title">Open Positions</div>
+            <div className="stat-value text-primary">12,450</div>
+            <div className="stat-desc">↗︎ 15% from last month</div>
+          </div>
+          
+          <div className="stat bg-base-100 shadow-xl rounded-lg">
+            <div className="stat-title">Average Salary</div>
+            <div className="stat-value text-secondary">$78K</div>
+            <div className="stat-desc">↗︎ 8% from last year</div>
+          </div>
+          
+          <div className="stat bg-base-100 shadow-xl rounded-lg">
+            <div className="stat-title">Top Skill</div>
+            <div className="stat-value text-accent text-lg">Project Mgmt</div>
+            <div className="stat-desc">Most in-demand skill</div>
+          </div>
+          
+          <div className="stat bg-base-100 shadow-xl rounded-lg">
+            <div className="stat-title">Growth Rate</div>
+            <div className="stat-value text-info">23%</div>
+            <div className="stat-desc">Year-over-year job growth</div>
+          </div>
+        </div>
+        
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Access Full Market Analytics</h2>
+            <p className="text-base-content/70">
+              Get detailed insights into salary trends, hiring patterns, and skill demands across all clean energy sectors.
+            </p>
+            <div className="card-actions justify-end">
+              <Link href="/auth/signup" legacyBehavior>
+                <a className="btn btn-primary">
+                  Access Premium Massachusetts Job Data
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </a>
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mt-12">
+          <Link href="/resources" className="btn btn-outline">
+            Back to Resources
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+} 

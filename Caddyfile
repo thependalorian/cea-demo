@@ -1,0 +1,33 @@
+{
+    email {$LETSENCRYPT_EMAIL}
+}
+
+# Agent API reverse proxy
+{$AGENT_API_HOSTNAME} {
+    # Request body size limit (10MB)
+    request_body {
+        max_size 10MB
+    }
+    
+    reverse_proxy agent-api:8001
+}
+
+# RAG Pipeline API reverse proxy
+{$RAG_API_HOSTNAME} {
+    # Request body size limit (10MB)
+    request_body {
+        max_size 10MB
+    }
+    
+    reverse_proxy rag-pipeline-api:8000
+}
+
+# Frontend reverse proxy
+{$FRONTEND_HOSTNAME} {
+    # Request body size limit (10MB)
+    request_body {
+        max_size 10MB
+    }
+    
+    reverse_proxy frontend:3000
+} 

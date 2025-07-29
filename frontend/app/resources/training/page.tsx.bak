@@ -1,0 +1,58 @@
+import React from 'react'
+import Link from 'next/link'
+
+export default function Training() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Training Programs</h1>
+          <p className="text-xl text-base-content/70">
+            Curated certification programs and courses to build your clean energy skills
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title text-lg">NABCEP Solar Certification</h3>
+              <p className="text-sm text-base-content/70">Industry-standard solar installer certification</p>
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-primary font-bold">$2,500</span>
+                <Link href="/auth/signup" className="btn btn-primary btn-sm">Learn More</Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title text-lg">Energy Efficiency Bootcamp</h3>
+              <p className="text-sm text-base-content/70">12-week intensive program</p>
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-primary font-bold">$1,800</span>
+                <Link href="/auth/signup" className="btn btn-primary btn-sm">Learn More</Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title text-lg">Wind Technician Program</h3>
+              <p className="text-sm text-base-content/70">Hands-on wind turbine maintenance training</p>
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-primary font-bold">$3,200</span>
+                <Link href="/auth/signup" className="btn btn-primary btn-sm">Learn More</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mt-12">
+          <Link href="/resources" className="btn btn-outline">
+            Back to Resources
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+} 

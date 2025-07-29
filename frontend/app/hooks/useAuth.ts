@@ -1,0 +1,329 @@
+/**
+ * Authentication Hook
+ * 
+ * Custom hook for managing authentication state and operations
+ * Uses Supabase for authentication
+ */
+
+'use client';
+
+import { useState, useEffect, createContext, useContext } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter, usePathname } from 'next/navigation';
+
+// Define auth user type
+export interface AuthUser {
+  id: string;
+  email: string;
+  profile_type?: string | null;
+  profile_id?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  avatar_url?: string | null;
+}
+
+// Define auth context type
+interface AuthContextType {
+  user: AuthUser | null;
+  profile: unknown | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  profileType: string | null;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithProvider: (provider: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  updatePassword: (password: string) => Promise<{ success: boolean; error?: string }>;
+  loadUserProfile: () => Promise<any>;
+}
+
+// Create auth context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Auth provider component
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const supabase = createClientComponentClient();
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [profileType, setProfileType] = useState<string | null>(null);
+  const router = useRouter();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const pathname = usePathname();
+
+  // Effect for initial auth state
+  useEffect(() => {
+    const checkUser = async () => {
+      setIsLoading(true);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting auth session:', error);
+          return;
+        }
+
+        if (session) {
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user) {
+            setUser({
+              id: userData.user.id,
+              email: userData.user.email || ''
+            });
+
+            // Load user profile
+            const profile = await loadUserProfile();
+            if (profile) {
+              setProfileType(profile.profile_type || null);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Set up auth state change listener
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || ''
+          });
+          await loadUserProfile();
+        } else {
+          setUser(null);
+          setProfile(null);
+          setProfileType(null);
+        }
+      }
+    );
+
+    checkUser();
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Load user profile data
+  const loadUserProfile = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        setProfile(null);
+        setProfileType(null);
+        return null;
+      }
+      
+      // Get user profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error loading profile:', profileError);
+        return null;
+      }
+
+      setProfile(profileData);
+      setProfileType(profileData?.profile_type || null);
+      
+      return profileData;
+    } catch (error) {
+      console.error('Profile loading error:', error);
+      return null;
+    }
+  };
+
+  // Login with email and password
+  const login = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Sign up with email and password
+  const signup = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Login with external provider
+  const loginWithProvider = async (provider: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Logout
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // Reset password
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Update password
+  const updatePassword = async (password: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Auth context value
+  const value = {
+    user,
+    profile,
+    isAuthenticated: !!user,
+    isLoading,
+    profileType,
+    login,
+    signup,
+    loginWithProvider,
+    logout,
+    resetPassword,
+    updatePassword,
+    loadUserProfile,
+  }
+
+  return React.createElement(
+    AuthContext.Provider,
+    { value: value },
+    children
+  )
+}
+
+// Auth hook
+export function useAuth() {
+  const context = useContext(AuthContext);
+  
+  // Check if we should use demo mode
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || 
+                     (typeof window !== 'undefined' && localStorage.getItem('DEMO_MODE') === 'true') ||
+                     true; // Always default to demo mode for now
+  
+  // If context is undefined or demo mode is enabled, return a demo context
+  if (context === undefined || isDemoMode) {
+    if (context === undefined) {
+      console.warn('useAuth was used outside of AuthProvider - using demo mode');
+    } else {
+      console.log('Demo mode enabled - using demo auth context');
+    }
+    
+    // Create a random demo user ID if one doesn't exist in localStorage
+    if (typeof window !== 'undefined' && !localStorage.getItem('DEMO_USER_ID')) {
+      localStorage.setItem('DEMO_USER_ID', `demo-${Math.random().toString(36).substring(2, 9)}`);
+    }
+    
+    const demoUserId = typeof window !== 'undefined' ? 
+      localStorage.getItem('DEMO_USER_ID') || 'demo-user' : 
+      'demo-user';
+    
+    // Return a demo version of the auth context with a mock user
+    return {
+      user: {
+        id: demoUserId,
+        email: 'demo@example.com',
+        profile_type: 'job_seeker'
+      },
+      profile: {
+        id: demoUserId,
+        full_name: 'Demo User',
+        email: 'demo@example.com',
+        profile_type: 'job_seeker'
+      },
+      isAuthenticated: true, // Pretend we're authenticated in demo mode
+      isLoading: false,
+      profileType: 'job_seeker',
+      login: async () => ({ success: true }),
+      signup: async () => ({ success: true }),
+      loginWithProvider: async () => ({ success: true }),
+      logout: async () => {},
+      resetPassword: async () => ({ success: true }),
+      updatePassword: async () => ({ success: true }),
+      loadUserProfile: async () => ({
+        id: demoUserId,
+        full_name: 'Demo User',
+        email: 'demo@example.com',
+        profile_type: 'job_seeker'
+      }),
+      setProfileType: () => {},
+      setOpenaiApiKey: () => {},
+      openaiApiKey: 'sk-demo-key',
+      setSupabaseAccessToken: () => {},
+      supabaseAccessToken: 'demo-token'
+    } as AuthContextType;
+  }
+  
+  return context;
+} 

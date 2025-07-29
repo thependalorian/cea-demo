@@ -1,0 +1,28 @@
+services:
+  # Caddy reverse proxy
+  caddy:
+    image: caddy:2.7-alpine
+    container_name: pendo-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - AGENT_API_HOSTNAME=${AGENT_API_HOSTNAME}
+      - RAG_API_HOSTNAME=${RAG_API_HOSTNAME}
+      - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - pendo-network
+    depends_on:
+      - agent-api
+      - rag-pipeline-api
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:

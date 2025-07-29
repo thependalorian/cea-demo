@@ -1,0 +1,106 @@
+{
+  "test_results": [
+    {
+      "test_name": "Validation Models",
+      "tests": [
+        [
+          "Tool response validation",
+          true
+        ],
+        [
+          "Resume analysis validation",
+          true
+        ],
+        [
+          "Climate resource validation",
+          true
+        ],
+        [
+          "Job search validation",
+          true
+        ]
+      ],
+      "passed": true,
+      "total": 4,
+      "success_rate": 100.0
+    },
+    {
+      "test_name": "Retry Mechanisms",
+      "tests": [
+        [
+          "Resume check retry",
+          true
+        ],
+        [
+          "Climate resources retry",
+          true
+        ]
+      ],
+      "passed": true,
+      "total": 2,
+      "success_rate": 100.0
+    },
+    {
+      "test_name": "Quality Assurance Integration",
+      "tests": [
+        [
+          "QA test 1",
+          true
+        ],
+        [
+          "QA test 2",
+          false
+        ],
+        [
+          "QA test 3",
+          true
+        ]
+      ],
+      "passed": false,
+      "total": 3,
+      "success_rate": 66.66666666666666
+    },
+    {
+      "test_name": "Validation-Driven Improvement",
+      "tests": [
+        [
+          "Validation-driven improvement",
+          true
+        ]
+      ],
+      "passed": true,
+      "total": 1,
+      "success_rate": 100.0
+    }
+  ],
+  "overall_success_rate": 90.0,
+  "total_tests": 10,
+  "total_passed": 9,
+  "agent_comparison": [
+    {
+      "variant": "Basic Agent",
+      "response_time": 14.614140375000716,
+      "response_length": 1046,
+      "success": true
+    },
+    {
+      "variant": "Agent with Validation",
+      "response_time": 16.12191116699978,
+      "response_length": 1477,
+      "success": true
+    },
+    {
+      "variant": "Enhanced Agent",
+      "response_time": 18.47279420799896,
+      "response_length": 1829,
+      "success": true
+    },
+    {
+      "variant": "QA Wrapper",
+      "response_time": 14.957903458998771,
+      "response_length": 1624,
+      "success": true
+    }
+  ],
+  "timestamp": "2024-01-20T00:00:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "cea-api-routes",
+  "version": "1.0.0",
+  "description": "Climate Economy Assistant API Routes",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "next": "^14.0.0"
+  }
+}

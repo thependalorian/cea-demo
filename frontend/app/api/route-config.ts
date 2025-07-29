@@ -1,0 +1,153 @@
+/**
+ * Route Configuration
+ * Centralizes route definitions and access control
+ */
+
+export const routeConfig = {
+  // Public routes that don't require authentication
+  public: {
+    paths: [
+      '/',
+      '/auth/login',
+      '/auth/signup',
+      '/auth/forgot-password',
+      '/auth/reset-password',
+      '/api/auth/callback',
+      '/about',
+      '/features',
+      '/pricing',
+      '/privacy',
+      '/terms',
+      '/help',
+      '/partners',
+      '/booking',
+      '/settings',
+      '/profile',
+      '/profile/setup',
+      '/profile/resume',
+      // DEMO MODE: ALL pages are public for demonstration purposes
+      // In a production environment, these would be protected
+      '/dashboard',
+      '/dashboard/analytics',
+      '/chat',
+      '/enhanced-chat',
+      '/jobs',
+      '/booking',
+      // Admin pages - all accessible in demo mode
+      '/admin',
+      '/admin/users',
+      '/admin/analytics',
+      '/admin/content',
+      '/admin/settings',
+      '/admin/resources',
+      '/admin/jobs',
+      '/admin/partners',
+      '/admin/profile',
+      // Partner pages - all accessible in demo mode
+      '/partner',
+      '/partner/dashboard',
+      '/partner/jobs',
+      '/partner/candidates',
+      '/partner/analytics',
+      '/partner/profile',
+      // Resources pages - all accessible in demo mode
+      '/resources',
+      '/resources/training',
+      '/resources/career-guides',
+      '/resources/events',
+      '/resources/job-data',
+      '/resources/veterans',
+      '/resources/reports',
+      // Auth pages - all accessible in demo mode
+      '/auth/login/admin',
+      '/auth/signup/job-seeker',
+      '/auth/signup/partner',
+      '/auth/signout',
+      '/auth/callback',
+      '/auth/callback/success'
+    ],
+    layout: 'public'
+  },
+
+  // Admin routes that require admin role
+  // DEMO MODE: Auth is disabled for demonstration purposes
+  admin: {
+    paths: [
+      '/admin',
+      '/admin/users',
+      '/admin/analytics',
+      '/admin/content',
+      '/admin/settings'
+    ],
+    layout: 'admin',
+    roles: ['admin']
+  },
+
+  // Partner routes that require partner role
+  // DEMO MODE: Auth is disabled for demonstration purposes
+  partner: {
+    paths: [
+      '/partner',
+      '/partner/dashboard',
+      '/partner/jobs',
+      '/partner/candidates',
+      '/partner/analytics',
+      '/partner/profile'
+    ],
+    layout: 'partner',
+    roles: ['partner', 'admin']
+  },
+
+  // Protected routes that require authentication
+  // DEMO MODE: Auth is disabled for demonstration purposes except for sensitive operations
+  protected: {
+    paths: [
+      // '/dashboard',  // Commented out for demo mode
+      // '/profile',    // Commented out for demo mode
+      // '/chat',       // Moved to public routes
+      // '/enhanced-chat', // Moved to public routes
+      '/settings'
+    ],
+    layout: 'app',
+    roles: ['user', 'partner', 'admin']
+  }
+}
+
+// Helper functions for route checking
+export function isPublicRoute(pathname: string): boolean {
+  return routeConfig.public.paths.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+}
+
+export function isAdminRoute(pathname: string): boolean {
+  return routeConfig.admin.paths.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+}
+
+export function isPartnerRoute(pathname: string): boolean {
+  return routeConfig.partner.paths.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+}
+
+export function isProtectedRoute(pathname: string): boolean {
+  return routeConfig.protected.paths.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+}
+
+export function getRouteConfig(pathname: string) {
+  if (isAdminRoute(pathname)) return routeConfig.admin
+  if (isPartnerRoute(pathname)) return routeConfig.partner
+  if (isProtectedRoute(pathname)) return routeConfig.protected
+  return routeConfig.public
+}
+
+export function hasRouteAccess(pathname: string, userRole?: string | null): boolean {
+  const config = getRouteConfig(pathname)
+  if (!('roles' in config)) return true // Public routes
+  if (!userRole) return false // No role, no access to protected routes
+  return (config as { roles: string[] }).roles.includes(userRole)
+} 

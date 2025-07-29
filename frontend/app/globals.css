@@ -1,0 +1,1143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ACT Brand Colors - Enhanced for OKLCH color space */
+  --midnight-forest: oklch(0.09 0.02 180);
+  --midnight-forest-50: oklch(0.95 0.01 180);
+  --midnight-forest-100: oklch(0.90 0.01 180);
+  --midnight-forest-200: oklch(0.80 0.01 180);
+  --midnight-forest-300: oklch(0.70 0.01 180);
+  --midnight-forest-400: oklch(0.60 0.02 180);
+  --midnight-forest-500: oklch(0.50 0.02 180);
+  --midnight-forest-600: oklch(0.40 0.02 180);
+  --midnight-forest-700: oklch(0.30 0.02 180);
+  --midnight-forest-800: oklch(0.20 0.02 180);
+  --midnight-forest-900: oklch(0.10 0.02 180);
+  
+  --moss-green: oklch(0.26 0.08 78);
+  --moss-green-50: oklch(0.95 0.03 78);
+  --moss-green-100: oklch(0.90 0.04 78);
+  --moss-green-200: oklch(0.80 0.05 78);
+  --moss-green-300: oklch(0.70 0.06 78);
+  --moss-green-400: oklch(0.60 0.07 78);
+  --moss-green-500: oklch(0.50 0.08 78);
+  --moss-green-600: oklch(0.40 0.08 78);
+  --moss-green-700: oklch(0.30 0.08 78);
+  --moss-green-800: oklch(0.20 0.07 78);
+  --moss-green-900: oklch(0.10 0.06 78);
+  
+  --spring-green: oklch(0.82 0.15 74);
+  --spring-green-50: oklch(0.98 0.04 74);
+  --spring-green-100: oklch(0.96 0.06 74);
+  --spring-green-200: oklch(0.94 0.08 74);
+  --spring-green-300: oklch(0.91 0.10 74);
+  --spring-green-400: oklch(0.88 0.12 74);
+  --spring-green-500: oklch(0.85 0.14 74);
+  --spring-green-600: oklch(0.75 0.14 74);
+  --spring-green-700: oklch(0.65 0.13 74);
+  --spring-green-800: oklch(0.55 0.12 74);
+  --spring-green-900: oklch(0.45 0.11 74);
+  
+  --sand-gray: oklch(0.93 0.03 85);
+  --sand-gray-50: oklch(0.98 0.01 85);
+  --sand-gray-100: oklch(0.95 0.02 85);
+  --sand-gray-200: oklch(0.93 0.03 85);
+  --sand-gray-300: oklch(0.85 0.04 85);
+  --sand-gray-400: oklch(0.75 0.05 85);
+  --sand-gray-500: oklch(0.65 0.05 85);
+  --sand-gray-600: oklch(0.55 0.05 85);
+  --sand-gray-700: oklch(0.45 0.04 85);
+  --sand-gray-800: oklch(0.35 0.03 85);
+  --sand-gray-900: oklch(0.25 0.02 85);
+  
+  /* Accent Colors - Semantic Purpose */
+  --seafoam-blue: oklch(0.75 0.12 195);
+  --seafoam-blue-light: oklch(0.85 0.10 195);
+  --seafoam-blue-dark: oklch(0.65 0.14 195);
+  
+  --earth-brown: oklch(0.40 0.14 45);
+  --earth-brown-light: oklch(0.50 0.16 45);
+  --earth-brown-dark: oklch(0.30 0.12 45);
+  
+  --solar-yellow: oklch(0.85 0.18 85);
+  --solar-yellow-light: oklch(0.90 0.15 85);
+  --solar-yellow-dark: oklch(0.80 0.20 85);
+  
+  --wind-blue: oklch(0.80 0.10 225);
+  --wind-blue-light: oklch(0.90 0.08 225);
+  --wind-blue-dark: oklch(0.70 0.12 225);
+  
+  /* Role-specific primary colors */
+  --jobseeker-primary: var(--spring-green);
+  --partner-primary: var(--moss-green);
+  --admin-primary: var(--midnight-forest);
+  
+  /* Adaptive color system */
+  --act-surface-primary: var(--sand-gray-50);
+  --act-text-primary: var(--midnight-forest);
+  
+  /* Elevation system */
+  --act-elevation-1: color-mix(in oklch, var(--act-surface-primary), transparent 5%);
+  --act-elevation-2: color-mix(in oklch, var(--act-surface-primary), transparent 8%);
+  --act-elevation-3: color-mix(in oklch, var(--act-surface-primary), transparent 12%);
+  
+  /* Component tokens */
+  --rounded-box: 0.75rem;
+  --rounded-btn: 0.5rem;
+  --rounded-badge: 0.375rem;
+  --animation-btn: 0.25s;
+  --animation-input: 0.2s;
+  --btn-focus-scale: 0.98;
+}
+
+/* Apple-inspired Purposeful Animation System */
+/* Only animations that serve a functional purpose and enhance the user experience */
+
+/* Climate Focus Animation - For environmental impact elements */
+@keyframes climate-focus {
+  0% { 
+    transform: scale(0.98); 
+    opacity: 0.8; 
+  }
+  50% { 
+    transform: scale(1.02); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+/* Data Emerge Animation - For progressive disclosure of climate data */
+@keyframes data-emerge {
+  0% { 
+    transform: translateY(8px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+/* Gentle Breathe Animation - For living elements that connect to nature */
+@keyframes gentle-breathe {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.03); 
+  }
+}
+
+/* Subtle Pulse - For indicators and notifications */
+@keyframes pulse-subtle {
+  0%, 100% { 
+    opacity: 0.85; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+/* Voice Animation - For audio indicators */
+@keyframes voice-wave {
+  0% {
+    transform: scale(0.98);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(var(--spring-green), 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: 0 0 0 8px rgba(var(--spring-green), 0);
+  }
+  100% {
+    transform: scale(0.98);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(var(--spring-green), 0);
+  }
+}
+
+/* Progress Animation - For loading states */
+@keyframes progress-bar {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Focus Ring Animation - For accessibility */
+@keyframes focus-ring-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Button Press Animation - For tactile feedback */
+@keyframes button-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* Card Lift Animation - For interactive cards */
+@keyframes card-lift {
+  0% { 
+    transform: translateY(0) scale(1);
+    box-shadow: var(--shadow-sm);
+  }
+  100% { 
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Shimmer Animation - For loading states */
+@keyframes shimmer {
+  0% { 
+    background-position: -200px 0;
+    opacity: 0.6;
+  }
+  100% { 
+    background-position: calc(200px + 100%) 0;
+    opacity: 0.8;
+  }
+}
+
+/* Apple-inspired Glass Morphism Effects */
+.glass-effect {
+  background: color-mix(in oklch, var(--act-surface-primary) 80%, transparent);
+  backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid color-mix(in oklch, var(--spring-green) 20%, transparent);
+  box-shadow: 0 4px 16px rgba(0, 24, 24, 0.06);
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.glass-button {
+  background: color-mix(in oklch, var(--act-surface-primary) 90%, transparent);
+  backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid color-mix(in oklch, var(--spring-green) 30%, transparent);
+  box-shadow: 0 2px 8px 0 rgba(178, 222, 38, 0.25);
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.glass-button:hover {
+  background: color-mix(in oklch, var(--act-surface-primary) 95%, transparent);
+  box-shadow: 0 4px 12px 0 rgba(178, 222, 38, 0.3);
+  transform: translateY(-2px);
+}
+
+.glass-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px 0 rgba(178, 222, 38, 0.25);
+  transition-duration: 0.1s;
+}
+
+/* Glass Card - For content containers */
+.glass-card {
+  background: color-mix(in oklch, var(--act-surface-primary) 85%, transparent);
+  backdrop-filter: blur(12px) saturate(170%);
+  border-radius: var(--rounded-box);
+  border: 0.5px solid color-mix(in oklch, var(--midnight-forest) 10%, transparent);
+  box-shadow: 0 4px 16px rgba(0, 24, 24, 0.06);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card-interactive {
+  cursor: pointer;
+  transform: translateZ(0); /* Hardware acceleration */
+}
+
+.glass-card-interactive:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1),
+              0 6px 12px rgba(0, 0, 0, 0.08),
+              0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.glass-card-interactive:active {
+  transform: translateY(-1px) scale(1.01);
+  transition-duration: 0.1s;
+}
+
+/* ACT Climate Economy Gradients */
+.eco-gradient {
+  background: linear-gradient(135deg, 
+    oklch(0.82 0.15 74) 0%,  /* spring-green */
+    oklch(0.65 0.13 74) 100% /* spring-green-700 */
+  );
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.eco-gradient-light {
+  background: linear-gradient(135deg, 
+    oklch(0.95 0.03 78) 0%,    /* moss-green-50 */
+    oklch(0.82 0.15 74) 50%,   /* spring-green */
+    oklch(0.50 0.08 78) 100%   /* moss-green-500 */
+  );
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.eco-gradient-dark {
+  background: linear-gradient(135deg, 
+    oklch(0.26 0.08 78) 0%,    /* moss-green */
+    oklch(0.09 0.02 180) 100%  /* midnight-forest */
+  );
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Interactive gradient buttons */
+.eco-gradient-button {
+  background: linear-gradient(135deg, 
+    oklch(0.82 0.15 74) 0%,  /* spring-green */
+    oklch(0.65 0.13 74) 100% /* spring-green-700 */
+  );
+  color: oklch(0.09 0.02 180); /* midnight-forest */
+  border: none;
+  border-radius: var(--rounded-btn);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-button);
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.eco-gradient-button:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, 
+    oklch(0.82 0.15 74) 0%,  /* spring-green */
+    oklch(0.60 0.13 74) 100% /* slightly darker */
+  );
+}
+
+.eco-gradient-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-button);
+  transition-duration: 0.1s;
+}
+
+/* Massachusetts climate data visualization gradient */
+.ma-climate-gradient {
+  background: linear-gradient(135deg,
+    oklch(0.80 0.10 225) 0%,   /* wind-blue */
+    oklch(0.75 0.12 195) 50%,  /* seafoam-blue */
+    oklch(0.82 0.15 74) 100%   /* spring-green */
+  );
+}
+
+/* Message System - With Apple-level polish */
+
+/* Message Appear Animation */
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* AI Message Appear - Slightly different timing */
+@keyframes ai-message-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Human Message Appear */
+@keyframes human-message-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Message Style Classes */
+.message-animation {
+  animation: message-appear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.ai-message-animation {
+  animation: ai-message-appear 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.human-message-animation {
+  animation: human-message-appear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Typing Indicator - Apple-inspired subtle animation */
+@keyframes typing-dots {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  background-color: var(--spring-green);
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin: 0 2px;
+  display: inline-block;
+  animation: typing-dots 1.2s infinite ease-in-out;
+  will-change: transform, opacity;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Message Bubble Styles */
+.message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  max-width: 80%;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.ai-message-bubble {
+  background-color: var(--sand-gray-100);
+  color: var(--midnight-forest);
+  border-bottom-left-radius: 0.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.human-message-bubble {
+  background-color: var(--spring-green);
+  color: var(--midnight-forest-900);
+  border-bottom-right-radius: 0.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-left: auto;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(76, 175, 80, 0.3);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(76, 175, 80, 0.6);
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(76, 175, 80, 0.2);
+}
+
+/* Micro-interactions */
+@keyframes button-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.button-press {
+  animation: button-press 0.1s ease-in-out;
+}
+
+/* Input Focus Effects */
+.focus-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.focus-effect:focus {
+  box-shadow: 
+    0 0 0 3px rgba(76, 175, 80, 0.1),
+    0 0 0 1px rgba(76, 175, 80, 0.3),
+    0 4px 12px rgba(76, 175, 80, 0.1);
+  border-color: #4CAF50;
+  transform: translateY(-1px);
+}
+
+/* Notification Badge */
+@keyframes notification-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(244, 63, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+.notification-badge {
+  animation: notification-pulse 2s infinite;
+}
+
+/* Particle System */
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.particle {
+  animation: particle-float 4s ease-in-out infinite;
+}
+
+/* Loading States */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+/* Voice Wave Animation */
+@keyframes voice-wave-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 20px; }
+}
+
+@keyframes voice-wave-2 {
+  0%, 100% { height: 8px; }
+  50% { height: 24px; }
+}
+
+@keyframes voice-wave-3 {
+  0%, 100% { height: 6px; }
+  50% { height: 16px; }
+}
+
+.voice-wave-1 { animation: voice-wave-1 0.6s ease-in-out infinite; }
+.voice-wave-2 { animation: voice-wave-2 0.8s ease-in-out infinite; }
+.voice-wave-3 { animation: voice-wave-3 0.7s ease-in-out infinite; }
+
+/* Utility Classes */
+/* Apple-inspired animation utility classes */
+
+/* Climate & Nature Animations */
+.animate-climate-focus {
+  animation: climate-focus 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animate-data-emerge {
+  animation: data-emerge 0.6s ease-out forwards;
+}
+
+.animate-gentle-breathe {
+  animation: gentle-breathe 3s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Button & UI Element Animations */
+.animate-button-press {
+  animation: button-press 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animate-card-lift {
+  animation: card-lift 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animate-focus-ring-appear {
+  animation: focus-ring-appear 0.2s ease-out;
+}
+
+/* Loading States */
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-progress-bar {
+  animation: progress-bar 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-voice-wave {
+  animation: voice-wave 0.8s ease-in-out infinite;
+}
+
+/* Voice & Audio Animations */
+.animate-typing-dot {
+  animation: typing-dots 1.2s infinite ease-in-out;
+}
+
+/* Message Area Fade Effect */
+.message-fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.message-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 280px;
+  }
+  
+  .main-content {
+    padding: 30px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    right: -100%;
+    transition: right 300ms ease-in-out;
+  }
+  
+  .sidebar.open {
+    right: 0;
+  }
+  
+  .main-content {
+    padding: 20px;
+  }
+  
+  .input-section {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+}
+
+/* Utility Classes */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Focus Styles - Apple-inspired focus rings */
+.focus-ring {
+  position: relative;
+  outline: none;
+}
+
+.focus-ring:focus-visible::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--spring-green);
+  border-radius: inherit;
+  box-shadow: 
+    0 0 0 4px color-mix(in oklch, var(--spring-green) 20%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--act-surface-primary) 100%, transparent);
+  animation: focus-ring-appear 0.2s ease-out;
+  pointer-events: none;
+}
+
+/* Transitions - Apple-smooth transitions */
+.transition-apple {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); /* Apple easing */
+  transition-duration: 250ms;
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); /* Apple easing */
+  transition-duration: 250ms;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); /* Apple easing */
+  transition-duration: 250ms;
+}
+
+/* ACT Shadow System */
+.shadow-soft {
+  box-shadow: 0 2px 12px rgba(0, 24, 24, 0.05);
+}
+
+.shadow-card {
+  box-shadow: 0 4px 16px rgba(0, 24, 24, 0.06);
+}
+
+.shadow-button {
+  box-shadow: 0 2px 8px 0 rgba(178, 222, 38, 0.25);
+}
+
+.shadow-hover {
+  transition: box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.shadow-hover:hover {
+  box-shadow: 0 4px 12px 0 rgba(178, 222, 38, 0.3);
+}
+
+.shadow-focus {
+  box-shadow: 0 0 0 3px rgba(178, 222, 38, 0.4);
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Custom Textarea Styles */
+textarea {
+  @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-0;
+}
+
+/* Add animation for streaming indicator */
+@keyframes pulse-fast {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 0.8s infinite;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --primary: #000000;
+  --secondary: #ffffff;
+  --accent: #ffff00;
+  --neutral: #ffffff;
+  --base-100: #ffffff;
+  --base-200: #f0f0f0;
+  --base-300: #e0e0e0;
+  --base-content: #000000;
+}
+
+/* Font size variations */
+.font-size-large {
+  font-size: 1.125rem; /* 18px */
+}
+
+.font-size-extra-large {
+  font-size: 1.25rem; /* 20px */
+}
+
+.font-size-large h1 { font-size: 3.5rem; }
+.font-size-large h2 { font-size: 2.5rem; }
+.font-size-large h3 { font-size: 2rem; }
+
+.font-size-extra-large h1 { font-size: 4rem; }
+.font-size-extra-large h2 { font-size: 3rem; }
+.font-size-extra-large h3 { font-size: 2.25rem; }
+
+/* Focus indicators */
+*:focus {
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #4CAF50;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dashboard and Analytics Components */
+.act-dashboard {
+  @apply bg-white rounded-lg shadow-md p-4 md:p-6;
+}
+
+.act-dashboard-header {
+  @apply mb-6 pb-4 border-b;
+}
+
+.act-dashboard-title {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.act-dashboard-description {
+  @apply text-sm text-gray-600 mt-1;
+}
+
+.act-dashboard-filters {
+  @apply mt-4 flex flex-wrap gap-4;
+}
+
+.act-dashboard-filter-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.act-dashboard-filter-select {
+  @apply rounded-md border border-gray-300 focus:ring-2 focus:outline-none px-4 py-2 text-sm w-full sm:w-auto;
+}
+
+.act-dashboard-metrics {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6;
+}
+
+.act-dashboard-metric {
+  @apply bg-white border rounded-lg shadow-md p-4;
+}
+
+.act-dashboard-metric-title {
+  @apply text-sm font-medium text-gray-500;
+}
+
+.act-dashboard-metric-value {
+  @apply text-2xl font-semibold;
+}
+
+.act-dashboard-charts {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6;
+}
+
+.act-dashboard-chart {
+  @apply bg-white border rounded-lg shadow-md p-4 overflow-hidden;
+}
+
+.act-dashboard-chart-title {
+  @apply text-lg font-medium mb-2;
+}
+
+.act-dashboard-chart-description {
+  @apply text-sm text-gray-500 mt-1 mb-4;
+}
+
+.act-dashboard-tables {
+  @apply space-y-6 mb-6;
+}
+
+.act-dashboard-table {
+  @apply bg-white border rounded-lg shadow-md overflow-hidden;
+}
+
+.act-dashboard-table-header {
+  @apply p-4 border-b border-gray-200;
+}
+
+.act-dashboard-table-title {
+  @apply text-lg font-medium;
+}
+
+.act-dashboard-table-description {
+  @apply text-sm text-gray-500 mt-1;
+}
+
+/* Theme-specific styles */
+.act-theme-jobseeker {
+  --theme-primary: var(--spring-green);
+  --theme-secondary: var(--sand-gray);
+  --theme-tertiary: var(--midnight-forest);
+  --theme-accent: var(--midnight-forest);
+  
+  .act-dashboard-metric {
+    @apply border-spring-green/10;
+  }
+  
+  .act-dashboard-chart {
+    @apply border-spring-green/10;
+  }
+  
+  .act-dashboard-table thead {
+    @apply bg-spring-green/5;
+  }
+  
+  .act-dashboard-table tbody tr {
+    @apply hover:bg-spring-green/5;
+  }
+}
+
+.act-theme-partner {
+  --theme-primary: var(--moss-green);
+  --theme-secondary: var(--spring-green);
+  --theme-tertiary: var(--midnight-forest);
+  --theme-accent: var(--midnight-forest);
+  
+  .act-dashboard-metric {
+    @apply border-moss-green/10;
+  }
+  
+  .act-dashboard-chart {
+    @apply border-moss-green/10;
+  }
+  
+  .act-dashboard-table thead {
+    @apply bg-moss-green/5;
+  }
+  
+  .act-dashboard-table tbody tr {
+    @apply hover:bg-moss-green/5;
+  }
+}
+
+.act-theme-admin {
+  --theme-primary: var(--midnight-forest);
+  --theme-secondary: var(--moss-green);
+  --theme-tertiary: var(--spring-green);
+  --theme-accent: var(--sand-gray);
+  
+  .act-dashboard-metric {
+    @apply border-midnight-forest/10;
+  }
+  
+  .act-dashboard-chart {
+    @apply border-midnight-forest/10;
+  }
+  
+  .act-dashboard-table thead {
+    @apply bg-midnight-forest/5;
+  }
+  
+  .act-dashboard-table tbody tr {
+    @apply hover:bg-midnight-forest/5;
+  }
+}
+
+/* Chart styles */
+.act-chart-container {
+  @apply relative w-full h-full min-h-[250px];
+}
+
+.act-chart-tooltip {
+  @apply bg-white/90 border border-gray-200 shadow-lg rounded-md p-2 text-sm;
+}
+
+/* Analytics styles */
+.act-analytics-header {
+  @apply flex flex-wrap items-center justify-between mb-6;
+}
+
+.act-analytics-title {
+  @apply text-2xl font-bold;
+}
+
+.act-analytics-description {
+  @apply text-gray-600 mt-1;
+}
+
+.act-analytics-actions {
+  @apply flex space-x-2 mt-4 sm:mt-0;
+}
+
+.act-analytics-empty {
+  @apply flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg;
+}
+
+.act-analytics-empty-icon {
+  @apply w-16 h-16 text-gray-400 mb-4;
+}
+
+.act-analytics-empty-title {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.act-analytics-empty-description {
+  @apply text-gray-500 mt-2;
+}
+
+/* Loading indicators */
+.act-loading-spinner {
+  @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2;
+}
+
+.act-loading-spinner.jobseeker {
+  @apply border-spring-green;
+}
+
+.act-loading-spinner.partner {
+  @apply border-moss-green;
+}
+
+.act-loading-spinner.admin {
+  @apply border-midnight-forest;
+}
+
+/* Accessibility improvements for contrast */
+.high-contrast {
+  --midnight-forest: #001818;
+  --moss-green: #394816;
+  --spring-green: #B2DE26;
+  --sand-gray: #EBE9E1;
+  
+  /* Use direct color values to avoid @apply issues */
+  .text-midnight-forest {
+    color: #001818;
+  }
+  
+  .text-moss-green {
+    color: #394816;
+  }
+  
+  .text-spring-green {
+    color: #B2DE26;
+  }
+  
+  .text-sand-gray {
+    color: #EBE9E1;
+  }
+}
+
+/* Notification animations for ACT UI components */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-up-right {
+  from {
+    transform: translate(100%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-up-left {
+  from {
+    transform: translate(-100%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s ease-out;
+}
+
+.animate-slide-in-up-right {
+  animation: slide-in-up-right 0.3s ease-out;
+}
+
+.animate-slide-in-up-left {
+  animation: slide-in-up-left 0.3s ease-out;
+}
+

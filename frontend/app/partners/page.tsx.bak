@@ -1,0 +1,61 @@
+"use client";
+// admin/app/partners/page.tsx
+// Admin Partners Management Dashboard
+// Purpose: Manage partner organizations and employers. Located at /partners
+
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+export default function PartnersDashboard() {
+  const [activePartners, setActivePartners] = useState<number | null>(null);
+  const [pendingApprovals, setPendingApprovals] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchPartnerStats() {
+      setLoading(true);
+      setError(null);
+      try {
+        const { count: active, error: err1 } = await supabase
+          .from("partner_profiles")
+          .select("*", { count: "exact", head: true })
+          .eq("verified", true);
+        const { count: pending, error: err2 } = await supabase
+          .from("partner_profiles")
+          .select("*", { count: "exact", head: true })
+          .eq("verified", false);
+        if (err1 || err2) throw err1 || err2;
+        setActivePartners(active ?? 0);
+        setPendingApprovals(pending ?? 0);
+      } catch (e: unknown) {
+        setError(e.message || "Failed to fetch partner stats");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPartnerStats();
+  }, []);
+
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">Partners Management</h1>
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div className="text-error">{error}</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-base-200 rounded-xl p-6 shadow">
+            <h2 className="text-xl font-semibold mb-2">Active Partners</h2>
+            <p className="text-3xl font-bold">{activePartners}</p>
+          </div>
+          <div className="bg-base-200 rounded-xl p-6 shadow">
+            <h2 className="text-xl font-semibold mb-2">Pending Approvals</h2>
+            <p className="text-3xl font-bold">{pendingApprovals}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+} 

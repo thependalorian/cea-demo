@@ -1,0 +1,169 @@
+import React from 'react'
+import Link from 'next/link'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Help Center - Climate Economy Assistant',
+  description: 'Find answers to common questions about using CEA for your Massachusetts clean energy career advancement.',
+  keywords: 'CEA help, Massachusetts clean energy help, platform support, FAQ'
+}
+
+export default function Help() {
+  return (
+    <div className="min-h-screen bg-base-200">
+      {/* Hero Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold mb-6">Help Center</h1>
+          <p className="text-xl text-base-content/70 mb-8">
+            Find answers to common questions and get the most out of CEA
+          </p>
+          <div className="max-w-md mx-auto">
+            <input 
+              type="text" 
+              placeholder="Search for help..." 
+              className="input input-bordered w-full"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Help Categories */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+              <div className="card-body">
+                <h3 className="card-title">Getting Started</h3>
+                <p className="text-base-content/70">Learn the basics of using CEA</p>
+                <div className="card-actions justify-end">
+                  <Link href="/help/getting-started" className="btn btn-primary btn-sm">
+                    View Guides
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+              <div className="card-body">
+                <h3 className="card-title">Account & Billing</h3>
+                <p className="text-base-content/70">Manage your account and subscription</p>
+                <div className="card-actions justify-end">
+                  <Link href="/help/account" className="btn btn-primary btn-sm">
+                    Get Help
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+              <div className="card-body">
+                <h3 className="card-title">Using the AI Assistant</h3>
+                <p className="text-base-content/70">Tips for better conversations</p>
+                <div className="card-actions justify-end">
+                  <Link href="/help/ai-assistant" className="btn btn-primary btn-sm">
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-base-100">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="collapse collapse-plus bg-base-200">
+              <input type="radio" name="help-faq" defaultChecked />
+              <div className="collapse-title text-xl font-medium">
+                How do I get started with CEA?
+              </div>
+              <div className="collapse-content">
+                <p className="text-base-content/70">
+                  Simply create a free account, complete your profile, and start chatting with our AI assistant. 
+                  Upload your resume for personalized job matches and career guidance.
+                </p>
+              </div>
+            </div>
+
+            <div className="collapse collapse-plus bg-base-200">
+              <input type="radio" name="help-faq" />
+              <div className="collapse-title text-xl font-medium">
+                How accurate is the job matching?
+              </div>
+              <div className="collapse-content">
+                <p className="text-base-content/70">
+                  Our AI achieves 95% match accuracy by analyzing your skills, experience, preferences, and 
+                  career goals against real job requirements from our partner employers.
+                </p>
+              </div>
+            </div>
+
+            <div className="collapse collapse-plus bg-base-200">
+              <input type="radio" name="help-faq" />
+              <div className="collapse-title text-xl font-medium">
+                Can I use CEA if I&apos;m not a veteran?
+              </div>
+              <div className="collapse-content">
+                <p className="text-base-content/70">
+                  Absolutely! While we have specialized tools for veterans, CEA is designed for anyone 
+                  looking to start or advance their career in the clean energy sector.
+                </p>
+              </div>
+            </div>
+
+            <div className="collapse collapse-plus bg-base-200">
+              <input type="radio" name="help-faq" />
+              <div className="collapse-title text-xl font-medium">
+                How do I upgrade my plan?
+              </div>
+              <div className="collapse-content">
+                <p className="text-base-content/70">
+                  You can upgrade your plan anytime from your account settings. Changes take effect 
+                  immediately, and we&apos;ll prorate any billing adjustments.
+                </p>
+              </div>
+            </div>
+
+            <div className="collapse collapse-plus bg-base-200">
+              <input type="radio" name="help-faq" />
+              <div className="collapse-title text-xl font-medium">
+                What if I need help that&apos;s not covered here?
+              </div>
+              <div className="collapse-content">
+                <p className="text-base-content/70">
+                  Contact our support team through the chat widget, email us at support@climateeconomyassistant.com, 
+                  or use our contact form. We typically respond within 24 hours.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Support */}
+      <section className="py-20 bg-base-200">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-4">Still Need Help?</h2>
+          <p className="text-xl text-base-content/70 mb-8">
+            Our support team is here to help you succeed
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/contact" className="btn btn-primary btn-lg">
+              Contact Support
+            </Link>
+            <Link href="/auth/signup" legacyBehavior>
+              <a className="btn btn-outline btn-lg">
+                Start Free Trial
+              </a>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+} 

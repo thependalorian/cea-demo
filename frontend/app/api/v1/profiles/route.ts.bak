@@ -1,0 +1,650 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabase as createServerClient, SupabaseClient } from '@/lib/supabase-server'
+import { Database } from '@/types/database';
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
+const supabase: SupabaseClient<Database> = createServerClient() as SupabaseClient<Database>;
+
+// GET /api/v1/profiles - Get current user's profile
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('id')
+    const profileType = searchParams.get('type') || 'general'
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // First get the main profile
+    const { data: mainProfile, error: mainError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (mainError && mainError.code !== 'PGRST116') {
+      console.error('Error fetching main profile:', mainError)
+      return NextResponse.json(
+        { error: 'Failed to fetch profile' },
+        { status: 500 }
+      )
+    }
+
+    let specificProfile: Record<string, unknown> | null = null;
+    let specificTableName: keyof Database['public']['Tables'] | '' = '';
+
+    // Get specific profile data based on type
+    if (profileType !== 'general') {
+      switch (profileType) {
+        case 'job_seeker':
+          specificTableName = 'job_seeker_profiles'
+          break
+        case 'partner':
+          specificTableName = 'partner_profiles'
+          break
+        case 'admin':
+          specificTableName = 'admin_profiles'
+          break
+      }
+
+      if (specificTableName) {
+        const { data: specificData } = await supabase
+          .from(specificTableName)
+          .select('*')
+          .eq('user_id', userId)
+          .single()
+        
+        specificProfile = specificData
+      }
+    }
+
+    // Merge main profile with specific profile data only if mainProfile exists
+    let combinedProfile = null;
+    if (mainProfile) {
+      combinedProfile = {
+        ...mainProfile,
+        ...specificProfile,
+        user_type: mainProfile.user_type || profileType
+      };
+    }
+
+    return NextResponse.json({
+      success: true,
+      profile: combinedProfile,
+      profileType,
+      message: combinedProfile ? 'Profile found' : 'No profile found'
+    })
+
+  } catch (error) {
+    console.error('Error in GET /api/v1/profiles:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/v1/profiles - Create a new profile
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { user_id, profile_type, ...profileData } = body
+
+    if (!user_id || !profile_type) {
+      return NextResponse.json(
+        { error: 'user_id and profile_type are required' },
+        { status: 400 }
+      )
+    }
+
+    const timestamp = new Date().toISOString()
+
+    // Check if profile already exists to avoid duplicates
+    const { data: existingProfile, error: profileCheckError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user_id)
+      .single()
+
+    if (existingProfile) {
+      return NextResponse.json(
+        { error: 'Profile already exists for this user' },
+        { status: 409 }
+      )
+    }
+
+    // If error is not "not found", return error
+    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
+      console.error('Error checking profile existence:', profileCheckError)
+      return NextResponse.json(
+        { error: `Failed to check profile existence: ${profileCheckError.message}` },
+        { status: 500 }
+      )
+    }
+
+    // Prepare main profile data (common fields) - EXCLUDE full_name since it's generated
+    const mainProfileData = {
+      id: user_id,
+      user_type: profile_type,
+      // full_name is generated column - do not include
+      email: profileData.email,
+      first_name: profileData.first_name,
+      last_name: profileData.last_name,
+      organization_name: profileData.organization_name,
+      organization_type: profileData.organization_type,
+      website: profileData.website,
+      description: profileData.description,
+      role: profile_type === 'admin' ? 'admin' : profile_type === 'partner' ? 'partner' : 'user',
+      partnership_level: profileData.partnership_level || 'standard',
+      verified: profileData.verified || false,
+      profile_completed: false,
+      contact_info: {
+        phone: profileData.phone,
+        email: profileData.email
+      },
+      created_at: timestamp,
+      updated_at: timestamp
+    }
+
+    // Insert into main profiles table
+    const { data: mainProfileResult, error: mainProfileError } = await supabase
+      .from('profiles')
+      .insert(mainProfileData)
+      .select()
+      .single()
+
+    if (mainProfileError) {
+      console.error('Error creating main profile:', mainProfileError)
+      return NextResponse.json(
+        { error: `Failed to create main profile: ${mainProfileError.message}` },
+        { status: 500 }
+      )
+    }
+
+    // Prepare specific profile data based on type
+    let specificProfileData: Record<string, unknown> = {
+      user_id: user_id,
+      created_at: timestamp,
+      updated_at: timestamp,
+      ...profileData
+    }
+
+    let specificTableName: keyof Database['public']['Tables'] | '' = '';
+    let specificProfileResult = null
+
+    // Insert into specific profile table
+    switch (profile_type) {
+      case 'job_seeker':
+        specificTableName = 'job_seeker_profiles'
+        specificProfileData = {
+          ...specificProfileData,
+          id: user_id, // job_seeker_profiles has both id and user_id
+          verified: false,
+          profile_completed: false,
+          remote_work_preference: profileData.remote_work_preference || 'hybrid',
+          skills: profileData.skills || [],
+          climate_interests: profileData.climate_interests || [],
+          desired_roles: profileData.desired_roles || [],
+          employment_types: profileData.employment_types || [],
+          preferred_locations: profileData.preferred_locations || [],
+          climate_focus_areas: profileData.climate_focus_areas || []
+        }
+        break
+
+      case 'partner':
+        specificTableName = 'partner_profiles'
+        specificProfileData = {
+          ...specificProfileData,
+          verified: false,
+          profile_completed: false,
+          partnership_level: profileData.partnership_level || 'standard',
+          partnership_start_date: new Date().toISOString().split('T')[0],
+          climate_focus: profileData.climate_focus || [],
+          industries: profileData.industries || [],
+          services_offered: profileData.services_offered || [],
+          training_programs: profileData.training_programs || [],
+          
+          // Additional partner profile fields
+          headquarters_location: profileData.headquarters_location,
+          employee_count: profileData.employee_count,
+          organization_size: profileData.organization_size,
+          founded_year: profileData.founded_year,
+          mission_statement: profileData.mission_statement,
+          
+          // Social media and web presence
+          website: profileData.website,
+          linkedin_url: profileData.linkedin_url,
+          twitter_handle: profileData.twitter_handle,
+          facebook_url: profileData.facebook_url,
+          instagram_handle: profileData.instagram_handle,
+          youtube_url: profileData.youtube_url,
+          
+          // Partner-specific URLs
+          careers_page_url: profileData.careers_page_url,
+          newsletter_signup_url: profileData.newsletter_signup_url,
+          events_calendar_url: profileData.events_calendar_url,
+          platform_login_url: profileData.platform_login_url,
+          student_portal_url: profileData.student_portal_url,
+          workforce_portal_url: profileData.workforce_portal_url,
+          podcast_url: profileData.podcast_url,
+          
+          // Partner features and offerings
+          hiring_actively: profileData.hiring_actively || false,
+          has_job_board: profileData.has_job_board || false,
+          has_mobile_app: profileData.has_mobile_app || false,
+          has_podcast: profileData.has_podcast || false,
+          has_resource_library: profileData.has_resource_library || false,
+          hosts_events: profileData.hosts_events || false,
+          internship_programs: profileData.internship_programs || false,
+          offers_certification: profileData.offers_certification || false,
+          offers_funding: profileData.offers_funding || false,
+          offers_mentorship: profileData.offers_mentorship || false,
+          offers_virtual_tours: profileData.offers_virtual_tours || false,
+          offers_webinars: profileData.offers_webinars || false
+        }
+        break
+
+      case 'admin':
+        specificTableName = 'admin_profiles'
+        specificProfileData = {
+          ...specificProfileData,
+          department: profileData.department,
+          admin_notes: profileData.admin_notes,
+          can_manage_users: profileData.can_manage_users || false,
+          can_manage_partners: profileData.can_manage_partners || false,
+          can_manage_content: profileData.can_manage_content || false,
+          can_manage_system: profileData.can_manage_system || false,
+          can_view_analytics: profileData.can_view_analytics || true,
+          total_admin_actions: 0,
+          profile_completed: true,
+          verified: false
+        }
+
+        // Validate admin permissions
+        if (!specificProfileData.department?.trim()) {
+          return NextResponse.json(
+            { error: 'Department is required for admin profiles' },
+            { status: 400 }
+          )
+        }
+
+        // Ensure at least one permission is granted
+        if (!specificProfileData.can_manage_users &&
+            !specificProfileData.can_manage_partners &&
+            !specificProfileData.can_manage_content &&
+            !specificProfileData.can_manage_system &&
+            !specificProfileData.can_view_analytics) {
+          return NextResponse.json(
+            { error: 'At least one admin permission must be granted' },
+            { status: 400 }
+          )
+        }
+        break
+    }
+
+    if (specificTableName) {
+      const { data: specificResult, error: specificError } = await supabase
+        .from(specificTableName)
+        .insert(specificProfileData)
+        .select()
+        .single()
+
+      if (specificError) {
+        console.error(`Error creating ${profile_type} profile:`, specificError)
+        // If specific profile creation fails, we might want to delete the main profile
+        // or continue with just the main profile - depends on business logic
+      } else {
+        specificProfileResult = specificResult
+      }
+    }
+
+    // Combine results
+    const combinedProfile = {
+      ...mainProfileResult,
+      ...specificProfileResult
+    }
+
+    return NextResponse.json({
+      success: true,
+      profile: combinedProfile,
+      profileType: profile_type,
+      message: `${profile_type} profile created successfully`
+    }, { status: 201 })
+
+  } catch (error) {
+    console.error('Error in POST /api/v1/profiles:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT /api/v1/profiles - Update existing profile
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { user_id, profile_type, ...updateData } = body
+
+    if (!user_id || !profile_type) {
+      return NextResponse.json(
+        { error: 'user_id and profile_type are required' },
+        { status: 400 }
+      )
+    }
+
+    const timestamp = new Date().toISOString()
+
+    // Prepare main profile update data (common fields) - EXCLUDE full_name since it's generated
+    const mainProfileData: Record<string, unknown> = {
+      user_type: profile_type,
+      // full_name is generated column - do not include in updates
+      email: updateData.email,
+      first_name: updateData.first_name,
+      last_name: updateData.last_name,
+      organization_name: updateData.organization_name,
+      organization_type: updateData.organization_type,
+      website: updateData.website,
+      description: updateData.description,
+      partnership_level: updateData.partnership_level,
+      verified: updateData.verified,
+      updated_at: timestamp
+    }
+
+    // Remove undefined values
+    Object.keys(mainProfileData).forEach(key => {
+      if (mainProfileData[key] === undefined) {
+        delete mainProfileData[key]
+      }
+    })
+
+    // Update main profiles table
+    const { data: mainProfileResult, error: mainProfileError } = await supabase
+      .from('profiles')
+      .update(mainProfileData)
+      .eq('id', user_id)
+      .select()
+      .single()
+
+    if (mainProfileError) {
+      console.error('Error updating main profile:', mainProfileError)
+      return NextResponse.json(
+        { error: `Failed to update main profile: ${mainProfileError.message}` },
+        { status: 500 }
+      )
+    }
+
+    // Prepare specific profile update data based on profile type
+    let specificUpdateData: Record<string, unknown> = {
+      updated_at: timestamp
+    }
+
+    // Handle specific profile data based on type
+    switch (profile_type) {
+      case 'job_seeker':
+        specificUpdateData = {
+          ...specificUpdateData,
+          // full_name is generated column - do not include in updates
+          email: updateData.email,
+          phone: updateData.phone,
+          location: updateData.location,
+          current_title: updateData.current_title,
+          organization_name: updateData.organization_name,
+          organization_type: updateData.organization_type,
+          experience_level: updateData.experience_level,
+          climate_focus: updateData.climate_focus,
+          climate_focus_areas: updateData.climate_focus_areas || [],
+          climate_interests: updateData.climate_interests || [],
+          desired_roles: updateData.desired_roles || [],
+          employment_types: updateData.employment_types || [],
+          preferred_locations: updateData.preferred_locations || [],
+          remote_work_preference: updateData.remote_work_preference,
+          skills: updateData.skills || [],
+          salary_range_min: updateData.salary_range_min,
+          salary_range_max: updateData.salary_range_max,
+        }
+        break
+        
+      case 'partner':
+        specificUpdateData = {
+          ...specificUpdateData,
+          // full_name is generated column - do not include in updates
+          email: updateData.email,
+          phone: updateData.phone,
+          organization_name: updateData.organization_name,
+          organization_type: updateData.organization_type,
+          description: updateData.description,
+          partnership_level: updateData.partnership_level,
+          headquarters_location: updateData.headquarters_location,
+          employee_count: updateData.employee_count,
+          organization_size: updateData.organization_size,
+          founded_year: updateData.founded_year,
+          mission_statement: updateData.mission_statement,
+          climate_focus: updateData.climate_focus || [],
+          industries: updateData.industries || [],
+          services_offered: updateData.services_offered || [],
+          training_programs: updateData.training_programs || [],
+          hiring_actively: updateData.hiring_actively,
+          linkedin_url: updateData.linkedin_url,
+          twitter_handle: updateData.twitter_handle,
+          facebook_url: updateData.facebook_url,
+          instagram_handle: updateData.instagram_handle,
+          youtube_url: updateData.youtube_url,
+          careers_page_url: updateData.careers_page_url,
+          newsletter_signup_url: updateData.newsletter_signup_url,
+          events_calendar_url: updateData.events_calendar_url,
+          platform_login_url: updateData.platform_login_url,
+          student_portal_url: updateData.student_portal_url,
+          workforce_portal_url: updateData.workforce_portal_url,
+          podcast_url: updateData.podcast_url,
+          has_job_board: updateData.has_job_board,
+          has_mobile_app: updateData.has_mobile_app,
+          has_podcast: updateData.has_podcast,
+          has_resource_library: updateData.has_resource_library,
+          hosts_events: updateData.hosts_events,
+          internship_programs: updateData.internship_programs,
+          offers_certification: updateData.offers_certification,
+          offers_funding: updateData.offers_funding,
+          offers_mentorship: updateData.offers_mentorship,
+          offers_virtual_tours: updateData.offers_virtual_tours,
+          offers_webinars: updateData.offers_webinars
+        }
+        break
+        
+      case 'admin':
+        specificUpdateData = {
+          ...specificUpdateData,
+          department: updateData.department,
+          admin_notes: updateData.admin_notes,
+          can_manage_users: updateData.can_manage_users,
+          can_manage_partners: updateData.can_manage_partners,
+          can_manage_content: updateData.can_manage_content,
+          can_manage_system: updateData.can_manage_system,
+          can_view_analytics: updateData.can_view_analytics
+        }
+
+        // Validate admin permissions
+        if (!specificUpdateData.department?.trim()) {
+          return NextResponse.json(
+            { error: 'Department is required for admin profiles' },
+            { status: 400 }
+          )
+        }
+
+        // Ensure at least one permission is granted
+        if (specificUpdateData.can_manage_users === false &&
+            specificUpdateData.can_manage_partners === false &&
+            specificUpdateData.can_manage_content === false &&
+            specificUpdateData.can_manage_system === false &&
+            specificUpdateData.can_view_analytics === false) {
+          return NextResponse.json(
+            { error: 'At least one admin permission must be granted' },
+            { status: 400 }
+          )
+        }
+        break
+    }
+
+    // Remove undefined values from specific update data
+    Object.keys(specificUpdateData).forEach(key => {
+      if (specificUpdateData[key] === undefined) {
+        delete specificUpdateData[key]
+      }
+    })
+
+    // Calculate profile completion for certain profile types
+    if (profile_type === 'job_seeker') {
+      const requiredFields = ['full_name', 'email', 'location', 'experience_level']
+      const completedFields = requiredFields.filter(field => 
+        specificUpdateData[field] !== undefined && specificUpdateData[field] !== ''
+      )
+      if (completedFields.length === requiredFields.length) {
+        specificUpdateData.profile_completed = true
+        mainProfileData.profile_completed = true
+      }
+    } else if (profile_type === 'partner') {
+      const requiredFields = ['organization_name', 'full_name', 'email', 'description']
+      const completedFields = requiredFields.filter(field => 
+        specificUpdateData[field] !== undefined && specificUpdateData[field] !== ''
+      )
+      if (completedFields.length === requiredFields.length) {
+        specificUpdateData.profile_completed = true
+        mainProfileData.profile_completed = true
+      }
+    }
+
+    // Update main profile completion status if calculated
+    if (mainProfileData.profile_completed !== undefined) {
+      await supabase
+        .from('profiles')
+        .update({ profile_completed: mainProfileData.profile_completed })
+        .eq('id', user_id)
+    }
+
+    let specificTableName: keyof Database['public']['Tables'] | '' = '';
+    let specificProfileResult = null
+
+    // Update specific profile table
+    switch (profile_type) {
+      case 'job_seeker':
+        specificTableName = 'job_seeker_profiles'
+        break
+      case 'partner':
+        specificTableName = 'partner_profiles'
+        break
+      case 'admin':
+        specificTableName = 'admin_profiles'
+        break
+    }
+
+    if (specificTableName) {
+      const { data: specificResult, error: specificError } = await supabase
+        .from(specificTableName)
+        .update(specificUpdateData)
+        .eq('user_id', user_id)
+        .select()
+        .single()
+
+      if (specificError) {
+        console.error(`Error updating ${profile_type} profile:`, specificError)
+        // Continue with main profile update even if specific fails
+      } else {
+        specificProfileResult = specificResult
+      }
+    }
+
+    // Combine results
+    const combinedProfile = {
+      ...mainProfileResult,
+      ...specificProfileResult
+    }
+
+    return NextResponse.json({
+      success: true,
+      profile: combinedProfile,
+      profileType: profile_type,
+      message: `${profile_type} profile updated successfully`
+    })
+
+  } catch (error) {
+    console.error('Error in PUT /api/v1/profiles:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE /api/v1/profiles - Delete profile
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('id')
+    const profileType = searchParams.get('type') || 'general'
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Delete from specific profile table first (foreign key constraints)
+    let specificTableName: keyof Database['public']['Tables'] | '' = '';
+    switch (profileType) {
+      case 'job_seeker':
+        specificTableName = 'job_seeker_profiles'
+        break
+      case 'partner':
+        specificTableName = 'partner_profiles'
+        break
+      case 'admin':
+        specificTableName = 'admin_profiles'
+        break
+    }
+
+    if (specificTableName) {
+      const { error: specificError } = await supabase
+        .from(specificTableName)
+        .delete()
+        .eq('user_id', userId)
+
+      if (specificError) {
+        console.error(`Error deleting ${profileType} profile:`, specificError)
+        // Continue to delete main profile even if specific fails
+      }
+    }
+
+    // Delete from main profiles table
+    const { error: mainError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId)
+
+    if (mainError) {
+      console.error('Error deleting main profile:', mainError)
+      return NextResponse.json(
+        { error: `Failed to delete profile: ${mainError.message}` },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `${profileType} profile deleted successfully`
+    })
+
+  } catch (error) {
+    console.error('Error in DELETE /api/v1/profiles:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

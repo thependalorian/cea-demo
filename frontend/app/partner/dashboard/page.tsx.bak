@@ -1,0 +1,502 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+;
+import { Section } from '@/components/ui/section';
+import { Container } from '@/components/ui/container';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+// Define types
+interface JobPerformance {
+  id: string;
+  title: string;
+  location: string;
+  applicants: number;
+  views: number;
+  posted_date: string;
+  status: string;
+}
+
+interface CandidateMatch {
+  id: string;
+  name: string;
+  match_score: number;
+  job_title: string;
+  skills: string[];
+}
+
+interface Activity {
+  id: string;
+  type: string;
+  title: string;
+  date: string;
+  details?: string;
+}
+
+export default function PartnerDashboard() {
+  // DEMO MODE: We'll use the user object if available, but won't require it
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    activeJobListings: 8,
+    totalApplications: 156,
+    candidateMatches: 23,
+    educationPrograms: 4,
+    resourceViews: 1247,
+    conversionRate: 12.5
+  });
+  const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
+  const [topPerformingJobs, setTopPerformingJobs] = useState<JobPerformance[]>([]);
+  const [candidateMatches, setCandidateMatches] = useState<CandidateMatch[]>([]);
+
+  // DEMO MODE: Organization name for demonstration
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const organizationName = user?.email?.split('@')[0] || 'Massachusetts Solar Solutions';
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    } else {
+      // DEMO MODE: Use mock data when not authenticated
+      // In a production environment, this would redirect to login
+      console.log('Demo mode: Using mock data for partner dashboard');
+      
+      // We already have default mock values in useState above
+      // Add mock job performance data
+      setTopPerformingJobs([
+        {
+          id: 'demo-job-1',
+          title: 'Solar Installation Manager',
+          location: 'Boston, MA',
+          applicants: 32,
+          views: 245,
+          posted_date: new Date(Date.now() - 14 * 86400000).toISOString(),
+          status: 'active'
+        },
+        {
+          id: 'demo-job-2',
+          title: 'Solar Panel Installer',
+          location: 'Worcester, MA',
+          applicants: 47,
+          views: 312,
+          posted_date: new Date(Date.now() - 21 * 86400000).toISOString(),
+          status: 'active'
+        },
+        {
+          id: 'demo-job-3',
+          title: 'Electrical Systems Designer',
+          location: 'Cambridge, MA',
+          applicants: 18,
+          views: 183,
+          posted_date: new Date(Date.now() - 7 * 86400000).toISOString(),
+          status: 'active'
+        },
+      ]);
+      
+      // Add mock candidate matches
+      setCandidateMatches([
+        {
+          id: 'demo-candidate-1',
+          name: 'Alex Johnson',
+          match_score: 95,
+          job_title: 'Solar Installation Manager',
+          skills: ['Project Management', 'Renewable Energy', 'Team Leadership']
+        },
+        {
+          id: 'demo-candidate-2',
+          name: 'Maria Rodriguez',
+          match_score: 92,
+          job_title: 'Electrical Systems Designer',
+          skills: ['Electrical Engineering', 'CAD', 'Solar PV Systems']
+        },
+        {
+          id: 'demo-candidate-3',
+          name: 'David Chen',
+          match_score: 88,
+          job_title: 'Solar Panel Installer',
+          skills: ['Solar Installation', 'Electrical Work', 'Safety Procedures']
+        },
+      ]);
+    }
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch real analytics data
+      const response = await fetch('/api/v1/analytics?user_type=partner&time_range=30d');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          const analyticsData = data.data;
+          setStats({
+            activeJobListings: analyticsData.overview?.active_jobs || 0,
+            totalApplications: analyticsData.overview?.total_applications || 0,
+            candidateMatches: 0, // Placeholder until candidate matching is implemented
+            educationPrograms: 0, // Placeholder until programs feature is implemented
+            resourceViews: 0, // Placeholder until view tracking is implemented
+            conversionRate: analyticsData.overview?.conversion_rate || 0
+          });
+          
+          // Set job performance data
+          setTopPerformingJobs(analyticsData.job_performance || []);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-base-200">
+      {/* Welcome Section */}
+      <Section className="bg-gradient-to-r from-primary/10 to-secondary/10 py-8">
+        <Container>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-base-content">
+                Welcome back, {user?.email?.split('@')[0] || 'Partner'}!
+              </h1>
+              <p className="text-base-content/70 mt-2">
+                Manage your clean energy talent pipeline and grow your team.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/partner/jobs/new" legacyBehavior>
+                <Button>
+                  Post New Job
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                </Button>
+              </Link>
+              <Link href="/partner/candidates" legacyBehavior>
+                <Button variant="outline">View Candidates</Button>
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Stats Overview */}
+      <Section className="py-8">
+        <Container>
+          {/* Demo Navigation Helper */}
+          <div className="mb-8 card bg-gradient-to-r from-blue-50 to-indigo-50 shadow-sm border border-blue-200">
+            <div className="card-body p-4">
+                           <h3 className="card-title text-lg flex items-center">
+               Demo Mode - Partner/Employer Dashboard
+             </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                                  You&apos;re viewing the <strong>Partner Dashboard</strong> - see how employers manage clean energy hiring. Explore other perspectives:
+              </p>
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                 <Link href="/dashboard" className="btn btn-outline btn-sm">
+                   Job Seeker Dashboard - Career guidance and opportunity discovery
+                 </Link>
+                 <Link href="/admin/dashboard" className="btn btn-outline btn-sm">
+                   Admin Dashboard - Platform administration and analytics
+                 </Link>
+               </div>
+              <div className="mt-3 pt-3 border-t border-blue-200">
+                                 <p className="text-xs text-gray-500">
+                   <strong>Partner Features:</strong> Post jobs, browse candidates, track hiring analytics, and manage your employer profile. 
+                   Try the <Link href="/chat" className="text-blue-600 hover:underline">Chat Assistant</Link> with your OpenAI API key.
+                 </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-primary">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                </svg>
+              </div>
+              <div className="stat-title">Active Jobs</div>
+              <div className="stat-value text-primary">{stats.activeJobListings}</div>
+              <div className="stat-desc">
+                <Link href="/partner/jobs" className="link link-primary">Manage jobs</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-secondary">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="stat-title">Applications</div>
+              <div className="stat-value text-secondary">{stats.totalApplications}</div>
+              <div className="stat-desc">This month</div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-accent">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div className="stat-title">Candidate Matches</div>
+              <div className="stat-value text-accent">{stats.candidateMatches}</div>
+              <div className="stat-desc">
+                <Link href="/partner/candidates" className="link link-accent">Review matches</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-info">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <div className="stat-title">Programs</div>
+              <div className="stat-value text-info">{stats.educationPrograms}</div>
+              <div className="stat-desc">
+                <Link href="/partner/programs" className="link link-info">Manage programs</Link>
+              </div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-success">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <div className="stat-title">Resource Views</div>
+              <div className="stat-value text-success">{stats.resourceViews.toLocaleString()}</div>
+              <div className="stat-desc">This month</div>
+            </div>
+
+            <div className="stat bg-base-100 shadow-xl rounded-lg">
+              <div className="stat-figure text-warning">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div className="stat-title">Conversion Rate</div>
+              <div className="stat-value text-warning">{stats.conversionRate}%</div>
+              <div className="stat-desc">Applications to hires</div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Main Content Grid */}
+      <Section className="py-8">
+        <Container>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Top Performing Jobs */}
+            <div className="lg:col-span-2">
+              <Card className="bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="card-title text-2xl">Top Performing Jobs</h2>
+                    <Link href="/partner/jobs" legacyBehavior>
+                      <Button variant="outline" size="sm">View All</Button>
+                    </Link>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* Job Performance Card 1 */}
+                    <div className="border border-base-300 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-bold text-lg">Senior Solar Engineer</h3>
+                          <p className="text-base-content/70">Posted 5 days ago</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="badge badge-success">Active</span>
+                          <p className="text-sm font-medium text-success mt-1">47 Applications</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-primary">47</div>
+                          <div className="text-xs text-base-content/60">Applications</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-secondary">12</div>
+                          <div className="text-xs text-base-content/60">Qualified</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-accent">3</div>
+                          <div className="text-xs text-base-content/60">Interviewed</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button className="btn btn-primary btn-sm">View Applications</button>
+                        <button className="btn btn-outline btn-sm">Edit Job</button>
+                        <button className="btn btn-ghost btn-sm">Analytics</button>
+                      </div>
+                    </div>
+
+                    {/* Job Performance Card 2 */}
+                    <div className="border border-base-300 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-bold text-lg">Wind Technician</h3>
+                          <p className="text-base-content/70">Posted 2 weeks ago</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="badge badge-info">Active</span>
+                          <p className="text-sm font-medium text-success mt-1">32 Applications</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-primary">32</div>
+                          <div className="text-xs text-base-content/60">Applications</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-secondary">8</div>
+                          <div className="text-xs text-base-content/60">Qualified</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-accent">2</div>
+                          <div className="text-xs text-base-content/60">Interviewed</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button className="btn btn-primary btn-sm">View Applications</button>
+                        <button className="btn btn-outline btn-sm">Edit Job</button>
+                        <button className="btn btn-ghost btn-sm">Analytics</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <Card className="bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h3 className="card-title mb-4">Quick Actions</h3>
+                  <div className="space-y-3">
+                    <Link href="/partner/jobs/new" legacyBehavior>
+                      <Button variant="outline" className="w-full justify-start">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Post New Job
+                      </Button>
+                    </Link>
+                    <Link href="/partner/programs/new" className="btn btn-outline w-full justify-start">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      Create Program
+                    </Link>
+                    <Link href="/partner/resources/new" className="btn btn-outline w-full justify-start">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Add Resource
+                    </Link>
+                    <Link href="/partner/analytics" className="btn btn-outline w-full justify-start">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      View Analytics
+                    </Link>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Recent Candidate Matches */}
+              <Card className="bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h3 className="card-title mb-4">Recent Matches</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                      <div className="avatar">
+                        <div className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold">
+                          JS
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">John Smith</p>
+                        <p className="text-xs text-base-content/60">Solar Engineer • 95% match</p>
+                      </div>
+                      <Badge variant="success" className="text-xs">New</Badge>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                      <div className="avatar">
+                        <div className="w-10 h-10 rounded-full bg-secondary text-secondary-content flex items-center justify-center font-bold">
+                          MR
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">Maria Rodriguez</p>
+                        <p className="text-xs text-base-content/60">Project Manager • 88% match</p>
+                      </div>
+                      <span className="badge badge-info badge-sm">Reviewed</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                      <div className="avatar">
+                        <div className="w-10 h-10 rounded-full bg-accent text-accent-content flex items-center justify-center font-bold">
+                          DL
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">David Lee</p>
+                        <p className="text-xs text-base-content/60">Wind Technician • 92% match</p>
+                      </div>
+                      <span className="badge badge-warning badge-sm">Pending</span>
+                    </div>
+                  </div>
+                  <Link href="/partner/candidates" legacyBehavior>
+                    <Button variant="outline" size="sm" className="w-full mt-4">
+                      View All Candidates
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+
+              {/* Performance Insights */}
+              <Card className="bg-gradient-to-r from-primary to-secondary text-primary-content shadow-xl">
+                <div className="card-body">
+                  <h3 className="card-title mb-4">This Month's Insights</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Job Views</span>
+                        <span>+23%</span>
+                      </div>
+                      <progress className="progress progress-secondary w-full" value="75" max="100"></progress>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Applications</span>
+                        <span>+15%</span>
+                      </div>
+                      <progress className="progress progress-accent w-full" value="60" max="100"></progress>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Quality Score</span>
+                        <span>4.8/5</span>
+                      </div>
+                      <progress className="progress progress-info w-full" value="96" max="100"></progress>
+                    </div>
+                  </div>
+                  <Link href="/partner/analytics" legacyBehavior>
+                    <Button variant="secondary" size="sm" className="mt-4">
+                      View Full Report
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </Container>
+      </Section>
+    </div>
+  );
+}

@@ -1,0 +1,312 @@
+// Next.js API route for individual subscription operations
+// Location: app/api/v1/subscriptions/[id]/route.ts
+// Handles GET, PUT, DELETE for specific subscriptions
+// High Priority Fix: Individual subscription management
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabase as createServerClient } from '@/lib/supabase-server'
+import { 
+  createSuccessResponse, 
+  createErrorResponse, 
+  handleApiError 
+} from '@/lib/api-response'
+import Stripe from 'stripe'
+import { Database } from '@/types/database';
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20'
+})
+
+type Subscription = Database['public']['Tables']['subscriptions']['Row'];
+type SubscriptionFeature = Database['public']['Tables']['subscription_features']['Row'];
+
+interface SubscriptionUpdateData {
+  status?: Subscription['status'];
+  tier_name?: string;
+  updated_at: string;
+}
+
+// GET /api/v1/subscriptions/[id] - Get specific subscription
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createServerClient()
+    const subscriptionId = params.id
+    
+    if (!subscriptionId) {
+      return NextResponse.json(
+        createErrorResponse('Subscription ID is required', 400),
+        { status: 400 }
+      )
+    }
+
+    // Authentication check
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createErrorResponse('Authentication required', 401),
+        { status: 401 }
+      )
+    }
+
+    // Get subscription with features and usage
+    const { data: subscription, error } = await supabase
+      .from('subscriptions')
+      .select(`
+        *,
+        subscription_features(*),
+        subscription_usage(*)
+      `)
+      .eq('id', subscriptionId)
+      .eq('user_id', session.user.id)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          createErrorResponse('Subscription not found', 'NOT_FOUND'),
+          { status: 404 }
+        )
+      }
+      console.error('Error fetching subscription:', error)
+      return NextResponse.json(
+        createErrorResponse('Failed to fetch subscription', 500),
+        { status: 500 }
+      )
+    }
+
+    // Enhance with Stripe data if available
+    let stripeData = null
+    if (subscription.stripe_subscription_id) {
+      try {
+        const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripe_subscription_id)
+        stripeData = {
+          current_period_start: new Date(stripeSubscription.current_period_start * 1000),
+          current_period_end: new Date(stripeSubscription.current_period_end * 1000),
+          cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+          status: stripeSubscription.status,
+          billing_cycle_anchor: stripeSubscription.billing_cycle_anchor ? new Date(stripeSubscription.billing_cycle_anchor * 1000) : null,
+          latest_invoice: stripeSubscription.latest_invoice
+        }
+      } catch (stripeError) {
+        console.warn(`Failed to fetch Stripe subscription ${subscription.stripe_subscription_id}:`, stripeError)
+      }
+    }
+
+    const enhancedSubscription = {
+      ...subscription,
+      stripe_data: stripeData
+    }
+    
+    return NextResponse.json(
+      createSuccessResponse(enhancedSubscription, 'Subscription retrieved successfully')
+    )
+
+  } catch (error) {
+    console.error('Subscription fetch error:', error)
+    return handleApiError(error)
+  }
+}
+
+// PUT /api/v1/subscriptions/[id] - Update subscription
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createServerClient()
+    const subscriptionId = params.id
+    
+    if (!subscriptionId) {
+      return NextResponse.json(
+        createErrorResponse('Subscription ID is required', 400),
+        { status: 400 }
+      )
+    }
+
+    // Authentication check
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createErrorResponse('Authentication required', 401),
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { status, tier_name, features, cancel_at_period_end } = body
+
+    // Verify subscription belongs to user
+    const { data: existingSubscription, error: fetchError } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('id', subscriptionId)
+      .eq('user_id', session.user.id)
+      .single()
+
+    if (fetchError || !existingSubscription) {
+      return NextResponse.json(
+        createErrorResponse('Subscription not found', 'NOT_FOUND'),
+        { status: 404 }
+      )
+    }
+
+    // Prepare update data
+    const updateData: SubscriptionUpdateData = {
+      updated_at: new Date().toISOString()
+    }
+
+    if (status) updateData.status = status
+    if (tier_name) updateData.tier_name = tier_name
+
+    // Update subscription in database
+    const { data: updatedSubscription, error: updateError } = await supabase
+      .from('subscriptions')
+      .update(updateData)
+      .eq('id', subscriptionId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Error updating subscription:', updateError)
+      return NextResponse.json(
+        createErrorResponse('Failed to update subscription', 500),
+        { status: 500 }
+      )
+    }
+
+    // Update Stripe subscription if needed
+    if (existingSubscription.stripe_subscription_id && (cancel_at_period_end !== undefined)) {
+      try {
+        await stripe.subscriptions.update(existingSubscription.stripe_subscription_id, {
+          cancel_at_period_end: cancel_at_period_end
+        })
+      } catch (stripeError) {
+        console.error('Error updating Stripe subscription:', stripeError)
+        // Continue with database update even if Stripe fails
+      }
+    }
+
+    // Update features if provided
+    if (features && Array.isArray(features)) {
+      // Delete existing features
+      await supabase
+        .from('subscription_features')
+        .delete()
+        .eq('subscription_id', subscriptionId)
+
+      // Insert new features
+      const featureData: Omit<SubscriptionFeature, 'id'>[] = features.map((feature: { name: string; limit: number; enabled: boolean; }) => ({
+        subscription_id: subscriptionId,
+        feature_name: feature.name,
+        feature_limit: feature.limit,
+        is_enabled: feature.enabled !== false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }))
+
+      await supabase
+        .from('subscription_features')
+        .insert(featureData)
+    }
+    
+    return NextResponse.json(
+      createSuccessResponse(updatedSubscription, 'Subscription updated successfully')
+    )
+
+  } catch (error) {
+    console.error('Subscription update error:', error)
+    return handleApiError(error)
+  }
+}
+
+// DELETE /api/v1/subscriptions/[id] - Cancel subscription
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createServerClient()
+    const subscriptionId = params.id
+    
+    if (!subscriptionId) {
+      return NextResponse.json(
+        createErrorResponse('Subscription ID is required', 400),
+        { status: 400 }
+      )
+    }
+
+    // Authentication check
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createErrorResponse('Authentication required', 401),
+        { status: 401 }
+      )
+    }
+
+    // Get subscription details
+    const { data: subscription, error: fetchError } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('id', subscriptionId)
+      .eq('user_id', session.user.id)
+      .single()
+
+    if (fetchError || !subscription) {
+      return NextResponse.json(
+        createErrorResponse('Subscription not found', 'NOT_FOUND'),
+        { status: 404 }
+      )
+    }
+
+    // Cancel in Stripe first
+    if (subscription.stripe_subscription_id) {
+      try {
+        await stripe.subscriptions.update(subscription.stripe_subscription_id, {
+          cancel_at_period_end: true
+        })
+      } catch (stripeError) {
+        console.error('Error canceling Stripe subscription:', stripeError)
+        return NextResponse.json(
+          createErrorResponse('Failed to cancel subscription with payment provider', 500),
+          { status: 500 }
+        )
+      }
+    }
+
+    // Update subscription status in database
+    const { error: updateError } = await supabase
+      .from('subscriptions')
+      .update({
+        status: 'cancelled',
+        cancelled_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', subscriptionId)
+
+    if (updateError) {
+      console.error('Error updating subscription status:', updateError)
+      return NextResponse.json(
+        createErrorResponse('Failed to update subscription status', 500),
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(
+      createSuccessResponse({ id: subscriptionId, status: 'cancelled' }, 'Subscription cancelled successfully')
+    )
+
+  } catch (error) {
+    console.error('Subscription cancellation error:', error)
+    return handleApiError(error)
+  }
+}

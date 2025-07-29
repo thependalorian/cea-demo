@@ -1,0 +1,456 @@
+/**
+ * ProfileTypeSelector
+ * 
+ * Purpose: User profile type selection component for onboarding flow
+ * Allows users to identify their role in the Massachusetts clean energy ecosystem
+ * Location: /app/components/ProfileTypeSelector.tsx
+ * Used by: Onboarding pages, profile setup, and registration flows
+ * 
+ * Features:
+ * - Multiple profile types for different user personas
+ * - Massachusetts clean energy sector focus
+ * - Detailed descriptions and benefits for each type
+ * - Accessible selection interface with keyboard navigation
+ * - ACT brand integration and responsive design
+ * 
+ * @example
+ * <ProfileTypeSelector onSelect={handleProfileSelect} />
+ */
+
+'use client';
+
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+// Profile type definitions
+interface ProfileType {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  color: string;
+  benefits: string[];
+  examples: string[];
+  suggestedPath?: string;
+  popular?: boolean;
+}
+
+interface ProfileTypeSelectorProps {
+  onSelect: (profileType: ProfileType) => void;
+  selectedType?: string;
+  showContinue?: boolean;
+  className?: string;
+}
+
+const profileTypes: ProfileType[] = [
+  {
+    id: 'job_seeker_entry',
+    title: 'Entry-Level Job Seeker',
+    subtitle: 'New to clean energy careers',
+    description: 'Recent graduates, career changers, or those seeking their first role in Massachusetts clean energy sector.',
+          icon: '',
+    color: 'from-green-500 to-emerald-600',
+    benefits: [
+      'Personalized career pathway planning',
+      'Entry-level job matching and alerts',
+      'Skills assessment and development guidance',
+      'Resume optimization for clean energy roles',
+      'Interview preparation and practice sessions'
+    ],
+    examples: [
+      'Recent environmental science graduate',
+      'Liberal arts major interested in sustainability',
+      'Community college graduate seeking technical roles',
+      'First-time job seeker in renewable energy'
+    ],
+    suggestedPath: 'Complete skills assessment → Build targeted resume → Apply to entry-level positions',
+    popular: true
+  },
+  {
+    id: 'career_changer',
+    title: 'Career Changer',
+    subtitle: 'Transitioning from another industry',
+    description: 'Experienced professionals looking to pivot their careers into Massachusetts clean energy opportunities.',
+    icon: '🔄',
+    color: 'from-blue-500 to-cyan-600',
+    benefits: [
+      'Skills transferability analysis',
+      'Industry transition planning',
+      'Networking with clean energy professionals',
+      'Certification and training recommendations',
+      'Career change success stories and mentorship'
+    ],
+    examples: [
+      'Traditional engineer moving to renewable energy',
+      'Finance professional interested in clean energy investments',
+      'Teacher wanting to work in environmental education',
+      'Healthcare worker seeking sustainability roles'
+    ],
+    suggestedPath: 'Map transferable skills → Complete bridging education → Network and apply strategically',
+    popular: true
+  },
+  {
+    id: 'veteran',
+    title: 'Military Veteran',
+    subtitle: 'Translating military experience',
+    description: 'Veterans transitioning to civilian careers in Massachusetts clean energy with valuable military skills and experience.',
+    icon: '🇺🇸',
+    color: 'from-red-500 to-orange-600',
+    benefits: [
+      'Military-to-civilian skills translation',
+      'Veterans preference job matching',
+      'GI Bill education guidance for clean energy',
+      'Veteran-owned business opportunities',
+      'Mentorship with veteran clean energy professionals'
+    ],
+    examples: [
+      'Navy electrician transitioning to offshore wind',
+      'Army engineer interested in solar projects',
+      'Air Force logistics specialist for clean energy supply chain',
+      'Marine Corps mechanic moving to EV maintenance'
+    ],
+    suggestedPath: 'Translate military skills → Leverage GI benefits → Connect with veteran employers'
+  },
+  {
+    id: 'international_professional',
+    title: 'International Professional',
+    subtitle: 'Bringing global expertise to Massachusetts',
+    description: 'International professionals with clean energy experience seeking opportunities in Massachusetts clean energy market.',
+    icon: '🌍',
+    color: 'from-purple-500 to-indigo-600',
+    benefits: [
+      'International credential evaluation',
+      'U.S. job market navigation guidance',
+      'Professional licensing assistance',
+      'Cultural adaptation support',
+      'International talent employer connections'
+    ],
+    examples: [
+      'European wind engineer relocating to Massachusetts',
+      'Asian solar technology specialist',
+      'Canadian environmental consultant',
+      'Australian renewable energy project manager'
+    ],
+    suggestedPath: 'Evaluate credentials → Obtain necessary certifications → Network with global companies'
+  },
+  {
+    id: 'experienced_professional',
+    title: 'Experienced Professional',
+    subtitle: 'Advancing in clean energy careers',
+    description: 'Seasoned clean energy professionals seeking advancement, leadership roles, or new opportunities in Massachusetts.',
+          icon: '',
+    color: 'from-yellow-500 to-amber-600',
+    benefits: [
+      'Executive and leadership role matching',
+      'Advanced skills development planning',
+      'Industry networking and thought leadership',
+      'Salary negotiation and career advancement',
+      'Expertise-based consulting opportunities'
+    ],
+    examples: [
+      'Senior engineer seeking management roles',
+      'Project manager aiming for director position',
+      'Consultant wanting to join corporate teams',
+      'Entrepreneur looking for executive opportunities'
+    ],
+    suggestedPath: 'Assess leadership readiness → Build executive network → Apply for senior positions'
+  },
+  {
+    id: 'partner_employer',
+    title: 'Employer/Partner',
+    subtitle: 'Hiring clean energy talent',
+    description: 'Massachusetts clean energy companies, organizations, and partners looking to hire qualified talent and access resources.',
+          icon: '',
+    color: 'from-moss-green to-midnight-forest',
+    benefits: [
+      'Access to qualified candidate pool',
+      'Diversity and inclusion recruiting support',
+      'Skills-based hiring assistance',
+      'Training program partnerships',
+      'Workforce development consulting'
+    ],
+    examples: [
+      'Solar installation companies needing technicians',
+      'Offshore wind developers hiring engineers',
+      'Clean energy startups seeking diverse talent',
+      'Government agencies with green jobs'
+    ],
+    suggestedPath: 'Post job opportunities → Access candidate database → Partner on training programs'
+  },
+  {
+    id: 'educator_counselor',
+    title: 'Educator/Counselor',
+    subtitle: 'Guiding others into clean energy',
+    description: 'Career counselors, educators, and workforce development professionals helping others access clean energy opportunities.',
+    icon: '🎓',
+    color: 'from-teal-500 to-green-600',
+    benefits: [
+      'Professional development resources',
+      'Industry insights and trends',
+      'Student/client success tools',
+      'Networking with industry professionals',
+      'Curriculum and training materials'
+    ],
+    examples: [
+      'University career counselors',
+      'Workforce development specialists',
+      'Community college instructors',
+      'Non-profit career coaches'
+    ],
+    suggestedPath: 'Access professional resources → Build industry connections → Enhance guidance skills'
+  }
+];
+
+const ProfileTypeSelector: React.FC<ProfileTypeSelectorProps> = ({
+  onSelect,
+  selectedType,
+  showContinue = true,
+  className
+}) => {
+  const [selectedProfile, setSelectedProfile] = useState<ProfileType | null>(
+    selectedType ? profileTypes.find(p => p.id === selectedType) || null : null
+  );
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
+  const handleSelect = (profile: ProfileType) => {
+    setSelectedProfile(profile);
+    onSelect(profile);
+  };
+
+  const toggleExpanded = (profileId: string) => {
+    setExpandedCard(expandedCard === profileId ? null : profileId);
+  };
+
+  return (
+    <div className={cn("w-full max-w-6xl mx-auto space-y-8", className)}>
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="p-3 bg-spring-green/10 rounded-full">
+                          <span className="text-2xl">CEA</span>
+          </div>
+          <h2 className="text-3xl font-bold text-midnight-forest">
+            Choose Your Profile Type
+          </h2>
+        </div>
+        <p className="text-lg text-moss-green max-w-3xl mx-auto">
+          Help us personalize your experience in Massachusetts&apos; clean energy ecosystem. 
+          Select the option that best describes your current situation and career goals.
+        </p>
+      </div>
+
+      {/* Popular Profiles Highlight */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center gap-2 bg-spring-green/10 px-4 py-2 rounded-full">
+                        <span className="text-spring-green">*</span>
+          <span className="text-sm font-medium text-moss-green">
+            Most popular choices for Massachusetts clean energy careers
+          </span>
+        </div>
+      </div>
+
+      {/* Profile Type Cards */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {profileTypes.map((profile) => (
+          <Card 
+            key={profile.id}
+            className={cn(
+              "relative cursor-pointer transition-all duration-300 hover:shadow-lg",
+              selectedProfile?.id === profile.id 
+                ? "ring-2 ring-spring-green shadow-lg scale-[1.02]" 
+                : "hover:shadow-md",
+              expandedCard === profile.id && "row-span-2 md:col-span-2 lg:col-span-1"
+            )}
+            onClick={() => handleSelect(profile)}
+          >
+            {/* Popular Badge */}
+            {profile.popular && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <div className="bg-spring-green text-midnight-forest text-xs font-bold px-2 py-1 rounded-full">
+                  Popular
+                </div>
+              </div>
+            )}
+
+            <div className="p-6 space-y-4">
+              {/* Header */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className={cn(
+                    "w-12 h-12 rounded-full bg-gradient-to-r flex items-center justify-center text-white text-xl",
+                    profile.color
+                  )}>
+                    {profile.icon}
+                  </div>
+                  {selectedProfile?.id === profile.id && (
+                    <div className="w-6 h-6 bg-spring-green rounded-full flex items-center justify-center">
+                      <span className="text-midnight-forest text-sm">✓</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-midnight-forest text-lg">
+                    {profile.title}
+                  </h3>
+                  <p className="text-sm text-moss-green font-medium">
+                    {profile.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {profile.description}
+              </p>
+
+              {/* Examples */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-moss-green uppercase tracking-wide">
+                  Examples Include:
+                </h4>
+                <div className="space-y-1">
+                  {profile.examples.slice(0, 2).map((example, index) => (
+                    <div key={index} className="text-xs text-gray-500 flex items-center gap-2">
+                      <span className="w-1 h-1 bg-spring-green rounded-full flex-shrink-0"></span>
+                      {example}
+                    </div>
+                  ))}
+                  {profile.examples.length > 2 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpanded(profile.id);
+                      }}
+                      className="text-xs text-spring-green hover:underline"
+                    >
+                      {expandedCard === profile.id ? 'Show less' : `+${profile.examples.length - 2} more`}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Expanded Details */}
+              {expandedCard === profile.id && (
+                <div className="space-y-4 border-t pt-4">
+                  {/* All Examples */}
+                  {profile.examples.length > 2 && (
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-semibold text-moss-green uppercase tracking-wide">
+                        All Examples:
+                      </h4>
+                      <div className="space-y-1">
+                        {profile.examples.slice(2).map((example, index) => (
+                          <div key={index} className="text-xs text-gray-500 flex items-center gap-2">
+                            <span className="w-1 h-1 bg-spring-green rounded-full flex-shrink-0"></span>
+                            {example}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Benefits */}
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-semibold text-moss-green uppercase tracking-wide">
+                      What You&apos;ll Get:
+                    </h4>
+                    <div className="space-y-1">
+                      {profile.benefits.map((benefit, index) => (
+                        <div key={index} className="text-xs text-gray-600 flex items-start gap-2">
+                          <span className="text-spring-green mt-1 flex-shrink-0">✓</span>
+                          {benefit}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Suggested Path */}
+                  {profile.suggestedPath && (
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-semibold text-moss-green uppercase tracking-wide">
+                        Suggested Path:
+                      </h4>
+                      <p className="text-xs text-gray-600 italic">
+                        {profile.suggestedPath}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Selection Indicator */}
+              <div className={cn(
+                "text-center text-xs font-medium transition-colors",
+                selectedProfile?.id === profile.id
+                  ? "text-spring-green"
+                  : "text-gray-400"
+              )}>
+                {selectedProfile?.id === profile.id 
+                  ? "✓ Selected" 
+                  : "Click to select"
+                }
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Selected Profile Summary */}
+      {selectedProfile && (
+        <Card className="p-6 bg-gradient-to-r from-spring-green/10 to-moss-green/10 border-spring-green/20">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "w-12 h-12 rounded-full bg-gradient-to-r flex items-center justify-center text-white text-xl",
+                selectedProfile.color
+              )}>
+                {selectedProfile.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold text-midnight-forest text-lg">
+                  You selected: {selectedProfile.title}
+                </h3>
+                <p className="text-moss-green">
+                  {selectedProfile.subtitle}
+                </p>
+              </div>
+            </div>
+            
+            <p className="text-gray-700">
+              {selectedProfile.description}
+            </p>
+
+            {showContinue && (
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                <Button className="bg-spring-green text-midnight-forest hover:bg-spring-green/90">
+                  Continue with {selectedProfile.title}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedProfile(null)}
+                  className="border-moss-green text-moss-green hover:bg-moss-green hover:text-white"
+                >
+                  Choose Different Profile
+                </Button>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Help Text */}
+      <div className="text-center">
+        <p className="text-sm text-gray-500">
+          Don&apos;t worry - you can change your profile type anytime in your settings. 
+          This helps us provide more relevant opportunities and guidance.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default ProfileTypeSelector; 

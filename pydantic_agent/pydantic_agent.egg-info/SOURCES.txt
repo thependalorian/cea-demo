@@ -1,0 +1,7 @@
+README.md
+setup.py
+pydantic_agent.egg-info/PKG-INFO
+pydantic_agent.egg-info/SOURCES.txt
+pydantic_agent.egg-info/dependency_links.txt
+pydantic_agent.egg-info/requires.txt
+pydantic_agent.egg-info/top_level.txt

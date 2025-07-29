@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: pydantic_agent
+Version: 0.1.0
+Summary: Pydantic models for Climate Economy Assistant
+Author: Climate Economy Assistant Team
+Author-email: info@climateeconomyassistant.org
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.9
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic-extra-types>=2.0.0
+Requires-Dist: email-validator>=2.0.0
+Requires-Dist: supabase>=1.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

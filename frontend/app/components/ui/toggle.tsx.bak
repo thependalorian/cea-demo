@@ -1,0 +1,165 @@
+"use client"
+
+import * as React from "react"
+import * as TogglePrimitive from "@radix-ui/react-toggle"
+import * as SwitchPrimitive from "@radix-ui/react-switch"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+// TOGGLE COMPONENT - For toggle buttons
+const toggleVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spring-green-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 will-change-transform",
+  {
+    variants: {
+      variant: {
+        default: 
+          "bg-transparent border border-sand-gray-200 hover:bg-sand-gray-100 data-[state=on]:bg-spring-green-50 data-[state=on]:border-spring-green-300",
+        climate: 
+          "bg-transparent border border-moss-green-200 hover:bg-moss-green-50 data-[state=on]:bg-moss-green-100 data-[state=on]:border-moss-green-400",
+        outline: 
+          "border border-sand-gray-200 hover:bg-sand-gray-50 data-[state=on]:bg-sand-gray-100 data-[state=on]:border-sand-gray-300",
+        ghost: 
+          "hover:bg-sand-gray-50 data-[state=on]:bg-sand-gray-100 data-[state=on]:text-midnight-forest-700",
+        glass: 
+          "backdrop-blur-md bg-white/70 dark:bg-midnight-forest-900/70 border border-white/20 dark:border-midnight-forest-700/30 shadow-sm hover:bg-white/80 dark:hover:bg-midnight-forest-900/80 data-[state=on]:bg-white/90 data-[state=on]:dark:bg-midnight-forest-800/90",
+      },
+      size: {
+        sm: "h-7 px-2 text-xs",
+        default: "h-9 px-3",
+        lg: "h-10 px-4",
+        icon: "h-9 w-9 p-0",
+      },
+      prominence: {
+        low: "shadow-none",
+        default: "shadow-sm",
+        high: "shadow-md",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+      prominence: "default",
+    },
+  }
+)
+
+export interface ToggleProps
+  extends React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root>,
+    VariantProps<typeof toggleVariants> {}
+
+const Toggle = React.forwardRef<
+  React.ElementRef<typeof TogglePrimitive.Root>,
+  ToggleProps
+>(({ className, variant, size, prominence, ...props }, ref) => (
+  <TogglePrimitive.Root
+    ref={ref}
+    className={cn(toggleVariants({ variant, size, prominence }), className)}
+    {...props}
+  />
+))
+
+Toggle.displayName = TogglePrimitive.Root.displayName
+
+// SWITCH COMPONENT - For on/off toggles (iOS-style)
+const switchVariants = cva(
+  "group peer inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-spring-green-500 data-[state=unchecked]:bg-sand-gray-200 dark:focus-visible:ring-offset-midnight-forest-950 dark:data-[state=checked]:bg-spring-green-600 dark:data-[state=unchecked]:bg-midnight-forest-700/50 will-change-transform",
+  {
+    variants: {
+      variant: {
+        default: "",
+        climate: "data-[state=checked]:bg-moss-green-500 dark:data-[state=checked]:bg-moss-green-600",
+        eco: "data-[state=checked]:bg-seafoam-blue-500 dark:data-[state=checked]:bg-seafoam-blue-600",
+        warning: "data-[state=checked]:bg-solar-yellow-500 dark:data-[state=checked]:bg-solar-yellow-600",
+        destructive: "data-[state=checked]:bg-red-500 dark:data-[state=checked]:bg-red-600",
+      },
+      size: {
+        sm: "h-[18px] w-[34px]",
+        default: "h-[24px] w-[44px]",
+        lg: "h-[30px] w-[56px]",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+const switchThumbVariants = cva(
+  "pointer-events-none block rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0 forced-colors:bg-[ButtonText] group-data-[state=checked]:shadow-sm will-change-transform",
+  {
+    variants: {
+      size: {
+        sm: "h-[14px] w-[14px] data-[state=checked]:translate-x-4",
+        default: "h-[20px] w-[20px] data-[state=checked]:translate-x-5",
+        lg: "h-[26px] w-[26px] data-[state=checked]:translate-x-[26px]",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
+export interface SwitchProps
+  extends React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>,
+    Omit<VariantProps<typeof switchVariants>, "size"> {
+      size?: "sm" | "default" | "lg";
+      hapticFeedback?: boolean;
+      label?: string;
+      description?: string;
+}
+
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitive.Root>,
+  SwitchProps
+>(({ className, variant, size, hapticFeedback, label, description, ...props }, ref) => {
+  const handleCheckedChange = (checked: boolean) => {
+    if (hapticFeedback && navigator.vibrate) {
+      navigator.vibrate(10); // Subtle haptic feedback on toggle
+    }
+    
+    if (props.onCheckedChange) {
+      props.onCheckedChange(checked);
+    }
+  };
+  
+  return (
+    <div className="flex items-center gap-2">
+      <SwitchPrimitive.Root
+        ref={ref}
+        className={cn(switchVariants({ variant, size }), className)}
+        onCheckedChange={handleCheckedChange}
+        {...props}
+        id={props.id || props.name}
+      >
+        <SwitchPrimitive.Thumb 
+          className={cn(
+            switchThumbVariants({ size }),
+            props.checked && "animate-button-press"
+          )} 
+        />
+      </SwitchPrimitive.Root>
+      
+      {(label || description) && (
+        <div className="flex flex-col">
+          {label && (
+            <label
+              htmlFor={props.id || props.name}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {label}
+            </label>
+          )}
+          {description && (
+            <p className="text-xs text-sand-gray-500 mt-1">{description}</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+})
+
+Switch.displayName = SwitchPrimitive.Root.displayName
+
+export { Toggle, toggleVariants, Switch, switchVariants } 

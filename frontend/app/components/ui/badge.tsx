@@ -1,0 +1,83 @@
+/**
+ * Badge Component - ACT Climate Economy Assistant
+ * 
+ * Purpose: Display status indicators, counters, and labels
+ * Location: /app/components/ui/badge.tsx
+ * Used by: Navigation, job listings, status indicators
+ * 
+ * Features:
+ * - Multiple color variants based on semantic meaning
+ * - Size options for different contexts
+ * - Optional icon support
+ * - Climate Economy specific variants
+ */
+
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-spring-green-400 focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default: "border-transparent bg-spring-green-500/15 text-spring-green-700",
+        secondary: "border-transparent bg-moss-green-500/15 text-moss-green-700",
+        destructive: "border-transparent bg-red-500/15 text-red-700",
+        outline: "border-sand-gray-300 text-midnight-forest-700 hover:bg-sand-gray-100",
+        success: "border-transparent bg-green-500/15 text-green-700",
+        warning: "border-transparent bg-amber-500/15 text-amber-700",
+        info: "border-transparent bg-spring-green-500/15 text-spring-green-700",
+        premium: "border-transparent bg-gradient-to-r from-amber-200 to-amber-400 text-midnight-forest-800",
+        renewable: "border-transparent bg-gradient-to-r from-spring-green-200 to-moss-green-300 text-midnight-forest-800",
+        veteran: "border-transparent bg-gradient-to-r from-blue-200 to-indigo-300 text-midnight-forest-800",
+        massachusetts: "border-transparent bg-blue-500/15 text-blue-700",
+      },
+      size: {
+        xs: "px-1.5 py-0.5 text-xs",
+        sm: "px-2 py-0.5 text-xs",
+        default: "px-2.5 py-0.5 text-sm",
+        lg: "px-3 py-1 text-base",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+}
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, size, icon, iconPosition = "left", children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(badgeVariants({ variant, size }), className)}
+        {...props}
+      >
+        {icon && iconPosition === "left" && (
+          <span className={cn("mr-1", size === "xs" ? "h-3 w-3" : size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4")}>
+            {icon}
+          </span>
+        )}
+        {children}
+        {icon && iconPosition === "right" && (
+          <span className={cn("ml-1", size === "xs" ? "h-3 w-3" : size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4")}>
+            {icon}
+          </span>
+        )}
+      </div>
+    )
+  }
+)
+Badge.displayName = "Badge"
+
+export { Badge, badgeVariants } 
